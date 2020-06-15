@@ -4,4 +4,5 @@
 !README.md
 !requirements.txt
 !/alexa
-!/registration
+!/registrationform
+!registrationform/registrationform.html
