@@ -39,8 +39,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         logger.info("In LaunchRequestHandler")
         # attr = handler_input.attributes_manager.persistent_attributes
+        # charity_id = 1
+        charity_name = "Charity Name Holder"
+        charity_mission = "Charity Mission Holder"
+        message = data.WELCOME_TEST_MESSAGE + charity_name + \
+            ". " + "It's mission is " + charity_mission
 
-        handler_input.response_builder.speak(data.WELCOME_MESSAGE).ask(
+        handler_input.response_builder.speak(message).ask(
             data.HELP_MESSAGE)
         return handler_input.response_builder.response
 

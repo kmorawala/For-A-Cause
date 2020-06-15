@@ -1,5 +1,7 @@
 SKILL_NAME = "For a cause"
 
+WELCOME_TEST_MESSAGE = "Welcome to Cause! Today's charity of the day is "
+
 WELCOME_MESSAGE = ("Welcome to Cause, your one-shop-stop to discover and donate to a cause "
                    "that speaks to you! You can ask me to search for charities by "
                    "category or name. You can also ask me to make a contribution to a charity for you! "
