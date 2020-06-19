@@ -6,7 +6,7 @@ import logging
 import json
 # import os
 # import boto3
-
+from query_functions import query_next_item
 from ask_sdk_core.skill_builder import (SkillBuilder, CustomSkillBuilder)
 from ask_sdk_core.dispatch_components import (
     AbstractRequestHandler, AbstractExceptionHandler,
@@ -16,10 +16,15 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response
 from ask_sdk_model.ui import SimpleCard  # for devices with a screen
 from alexa import data, util  # data and utils in a seperate file
+# added for remembering attributes
+import os
+from ask_sdk_s3.adapter import S3Adapter
+s3_adapter = S3Adapter(bucket_name=os.environ["S3_PERSISTENCE_BUCKET"])
 # from ask_sdk_s3.adapter import S3Adapter #Importing S3Adapter if needed
 
 # Create a skill builder
-sb = SkillBuilder()
+sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
+# sb = SkillBuilder()
 
 # Create a logger instance
 logger = logging.getLogger(__name__)
@@ -38,15 +43,39 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         logger.info("In LaunchRequestHandler")
-        # attr = handler_input.attributes_manager.persistent_attributes
-        # charity_id = 1
-        charity_name = "Charity Name Holder"
-        charity_mission = "Charity Mission Holder"
-        message = data.WELCOME_TEST_MESSAGE + charity_name + \
-            ". " + "It's mission is " + charity_mission
+        charity_id = 1
+        #charity_name = "Charity Name Holder"
+        #charity_mission = "Charity Mission Holder"
 
+        # storing persistance attributes and checking for id attributes
+        attr = handler_input.attributes_manager.persistent_attributes
+        attributes_are_present = ("id" in attr)
+
+        # error checking
+        if attributes_are_present:
+            charity_id = attr['id']
+        else:
+            charity_id = 1
+
+        # DynamoDB query
+        charity_name, charity_mission = query_next_item(charity_id, "Animals")
+
+        message = data.WELCOME_TEST_MESSAGE + \
+            str(charity_id) + " " + charity_name + ". " + \
+            "It's mission is " + charity_mission
         handler_input.response_builder.speak(message).ask(
             data.HELP_MESSAGE)
+
+        # Increment the charity_id
+        charity_id += 1
+
+        # update and save persistent_attributes
+        attr = {
+            "id": charity_id
+        }
+        handler_input.attributes_manager.persistent_attributes = attr
+        handler_input.attributes_manager.save_persistent_attributes()
+
         return handler_input.response_builder.response
 
 
