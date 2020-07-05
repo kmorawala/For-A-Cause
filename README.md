@@ -12,9 +12,9 @@ Our project’s inspiration came from when we were looking for a way to donate t
 ## What it does and How we built it
 Our design is broken into three tiers:
 
-* Charity Interactions: A front-end is dedicated for the charities to register with us and provide us with valuable information to share with users.
-* Storage: An AWS (DynamoDB) noSQL database is utilized that stores the information provided by the charities and later retrieved by the Alexa skill.
-* User Interactions via Alexa voice skill: The user interacts with the app using an Amazon smart device via Alexa voice skill - For A Cause. Python is used for the back-end logic for the skill development. The back-end retrieves necessary information from the database, uses Amazon Pay for processing donation payments, and handles other requests as made by the users.
+* **Charity Interactions:** A front-end is dedicated for the charities to register with us and provide us with valuable information to share with users.
+* **Storage:** An AWS (DynamoDB) NoSQL database is utilized that stores the information provided by the charities and later retrieved by the Alexa skill.
+* **User Interactions via Alexa voice skill:** The user interacts with the app using an Amazon smart device via Alexa voice skill - **For A Cause**. Python is used for the back-end logic for the skill development. The back-end retrieves necessary information from the database, uses Amazon Pay for processing donation payments, and handles other requests as made by the users.
 
 We used the following technologies:
 * Python
@@ -37,10 +37,10 @@ We feel proud to be able to develop a multi-facet system that the charities can 
 
 ## What we learned
 We learned an abundance of things from where we started. A few of the highlights are as follows:
-Alexa Voice Skills
-AWS DynamoDB and its integration to Alexa skills
-AmazonPay and its integration to Alexa skills
-Various front-end technologies
+* Alexa Voice Skills
+* AWS DynamoDB and its integration to Alexa skills
+* AmazonPay and its integration to Alexa skills
+* Various front-end technologies
 
 ## What's next for our project
 We would like to add features such as monthly subscription, charity of the month, ability for charities to obtain user address to send appreciation gifts, and so forth. We think this app has a huge potential to help non-profits!
