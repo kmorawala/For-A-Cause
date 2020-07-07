@@ -1,32 +1,26 @@
 SKILL_NAME = "For a cause"
 
-WELCOME_TEST_MESSAGE = "Welcome to Cause! Today's charity of the day is "
+WELCOME_MESSAGE = "Welcome to Cause!"
 
-WELCOME_MESSAGE = ("Welcome to Cause, your one-shop-stop to discover and donate to a cause "
-                   "that speaks to you! You can ask me to search for charities by "
-                   "category or name. You can also ask me to make a contribution to a charity for you! "
-                   "What would you like to do? ")
+TODAYS_CHARITY_MESSAGE = "Today's charity of the day is "
 
-WELCOME_BACK_MESSAGE = "Welcome back to Cause! What would you like to do? You can say search for a charity or donate."
+MISSION_MSG = "It's mission is "
+
+TOTAL_CONTRIBUTION = ". Total contribution made to this charity so far is "
 
 REPROMPT_SPEECH = "Sorry can you please repeat that?"
 
-SEARCH_A_CHARITY_SPEECH = "Would you like to search for a charity by name or by category?"
+USER_OPTION = " Would you like to donate to this charity or explore next charity?"
 
-ASK_CHARITY_NAME_SPEECH = "Which charity would you like to search for?"
-
-ASK_CHARITY_CATEGORY_SPEECH = "Which charity category would you like to search within?"
-
-DONATION_MADE_SPEECH = "Your donation has been made."
+DONATION_MADE_SPEECH = "Your donation will be made to "
 
 HELP_MESSAGE = ("I am your one-shop-stop to discover a cause "
-                "that speaks to you! You can ask me to search charities by "
-                "category or by name. I can remember your favourite charity, "
-                "category and more. You can also ask me to make a contribution for you! "
-                "What would you like to do?")
+                "that speaks to you! You can explore our charities "
+                "and make a contribution to them by simply talking to me! "
+                "To explore charities say explore charities or donate to donate to today's charity. ")
 
 
 FALLBACK_ANSWER = (
     "Sorry. I can't help you with that. {}".format(HELP_MESSAGE))
 
-GOODBYE_ANSWER = "Goodbye!"
+GOODBYE_ANSWER = "Good bye! Come back soon to help a cause that speaks to you!"

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 """Cause app."""
 
+# python imports
 from ask_sdk_model.interfaces.connections import SendRequestDirective
 import random
 import logging
 import json
-# import os
-# import boto3
-from query_functions import query_next_item, get_item_count
-# from query_functions import
+
+# imports from SDK
 from ask_sdk_core.skill_builder import (SkillBuilder, CustomSkillBuilder)
 from ask_sdk_core.dispatch_components import (
     AbstractRequestHandler, AbstractExceptionHandler,
@@ -17,21 +16,24 @@ from ask_sdk_core.utils import is_request_type, is_intent_name
 from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response
 from ask_sdk_model.ui import SimpleCard  # for devices with a screen
+from ask_sdk_model.ui import AskForPermissionsConsentCard
+from ask_sdk_model.interfaces.connections import ConnectionsRequest
+# from ask_sdk_model.interfaces.amazonpay.model
+
+# imports from several utility functions
 # data, utils, config, payload_builder, and directive_builder in a seperate file
 from alexa import data, util, payload_builder, config, directive_builder
-from ask_sdk_model.ui import AskForPermissionsConsentCard
-# from ask_sdk_model.interfaces.amazonpay.model
+
+# DB query functions
+from query_functions import *
+
 # added for remembering attributes
 import os
 from ask_sdk_s3.adapter import S3Adapter
 s3_adapter = S3Adapter(bucket_name=os.environ["S3_PERSISTENCE_BUCKET"])
-# from ask_sdk_s3.adapter import S3Adapter #Importing S3Adapter if needed
 
-# Create a skill builder
+# Session variables (only exist during one Alexa session)
 sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
-# sb = SkillBuilder()
-
-# Create a logger instance
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -49,131 +51,117 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         logger.info("In LaunchRequestHandler")
 
-        # storing persistance attributes and checking for id attributes
-        attr = handler_input.attributes_manager.persistent_attributes
-        attributes_are_present = ("id" in attr)
+        message = data.WELCOME_MESSAGE + " " + data.TODAYS_CHARITY_MESSAGE + \
+            get_next_charity(self, handler_input)
 
-        # error checking
-        if attributes_are_present:
-            charity_id = attr['id']
-        else:
-            charity_id = 1
+        handler_input.response_builder.speak(message).ask(message)
 
-        max_charity_id = get_item_count("Animals")
+        return handler_input.response_builder.response
 
-        if charity_id > max_charity_id:
-            charity_id = 1
 
-        # DynamoDB query
-        charity_name, charity_mission = query_next_item(charity_id, "Animals")
-        # charity_name, charity_mission = query_next_item(2, "Animals")
+def get_next_charity(self, handler_input):
+    """Function used for going to the next charity in the database."""
 
-        # checking if the item count function is working
-        # item_count =
-        # + "Item counts are " + item_count
+    logger.info("In get_next_charity function")
 
-        message = data.WELCOME_TEST_MESSAGE + \
-            str(charity_id) + " " + charity_name + ". " + \
-            "It's mission is " + charity_mission
-        handler_input.response_builder.speak(message).ask(
-            data.HELP_MESSAGE)
+    # Accessing persistance attributes for charity_id
+    attr = handler_input.attributes_manager.persistent_attributes
+    attributes_are_present = ("id" in attr)
 
-        # Increment the charity_id
+    table_name = "Animals"
+    # below global variables will be used in other classes/functions
+    global charity_name
+    global charity_id
+
+    # error checking to ensure charity_id is within a valid range
+    if attributes_are_present:
+        charity_id = attr['id']
         charity_id += 1
+    else:
+        charity_id = 1
 
-        # update and save persistent_attributes
-        attr = {
-            "id": charity_id
-        }
-        handler_input.attributes_manager.persistent_attributes = attr
-        handler_input.attributes_manager.save_persistent_attributes()
+    max_charity_id = get_item_count(table_name)
+    if charity_id > max_charity_id:
+        charity_id = 1
 
-        return handler_input.response_builder.response
+    # DynamoDB query
+    charity_name, charity_mission = query_next_item(charity_id, table_name)
+    # charity_name, charity_mission = query_next_item(2, "Animals")
 
+    message = charity_name + ". " + data.MISSION_MSG + \
+        charity_mission + " " + data.USER_OPTION
+    # logger.info(message)
 
-class GetCharityInfoIntentHandler(AbstractRequestHandler):
-    """Handler for providing charity information."""
+    # update and save persistent_attributes
+    attr = {
+        "id": charity_id
+    }
+    handler_input.attributes_manager.persistent_attributes = attr
+    handler_input.attributes_manager.save_persistent_attributes()
 
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("GetCharityInfoIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        logger.info("In GetCharityInfoHandler")
-
-        charity_info = "info about the charity goes here"
-
-        handler_input.response_builder.speak(charity_info).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, charity_info))
-
-        return handler_input.response_builder.response
+    return message
 
 
-class SearchACharityIntentHandler(AbstractRequestHandler):
-    """Handler for searching for a charity."""
+class GetNextCharityIntentHandler(AbstractRequestHandler):
+    """Handler for exploring the next charity."""
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("SearchACharityIntent")(handler_input)
+        return is_intent_name("GetNextCharityIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        logger.info("In SearchACharityIntentHandler")
+        logger.info("In GetNextCharityIntentHandler")
 
-        handler_input.response_builder.speak(data.SEARCH_A_CHARITY_SPEECH).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.SEARCH_A_CHARITY_SPEECH))
+        message = "Our next charity is " + \
+            get_next_charity(self, handler_input)
+
+        handler_input.response_builder.speak(message).ask(
+            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
 
         return handler_input.response_builder.response
 
 
-class SearchACharityByNameIntentHandler(AbstractRequestHandler):
+class MakeDonationIntentHandler(AbstractRequestHandler):
     """Handler for searching for a charity by name."""
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("SearchACharityByNameIntent")(handler_input)
+        return is_intent_name("MakeDonationIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        logger.info("In SearchACharityByNameIntentHandler")
+        logger.info("In MakeDonationIntentHandler")
 
-        handler_input.response_builder.speak(data.ASK_CHARITY_NAME_SPEECH).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.ASK_CHARITY_NAME_SPEECH))
+        # database query to get the total contribution made to the charity
+        table_name = "Animals"
+        total_contribution = get_total_contribution(charity_id, table_name)
 
-        return handler_input.response_builder.response
+        # access the user spoken slot value for the amount of contribution
+        slots = handler_input.request_envelope.request.intent.slots
+        # logger.info("slots")
+        # logger.info(slots)
+        amount_donated_list = slots["DonationAmount"].value
+        # logger.info(amount_donated_list)
+        amount_donated = int(amount_donated_list)
+        # logger.info("amount_donated")
+        # logger.info(amount_donated)
+        # amount_donated = amount_donated_pair['value']
 
+        total_contribution = total_contribution + int(amount_donated)
+        # logger.info("total_contribution")
+        # logger.info(total_contribution)
 
-class SearchACharityByCategoryIntentHandler(AbstractRequestHandler):
-    """Handler for searching for a charity by name."""
+        # database query to update the total contribution
+        update_total_contribution(
+            charity_id, table_name, int(total_contribution))
 
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("SearchACharityByCategoryIntent")(handler_input)
+        message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
+            str(total_contribution) + \
+            " dollars. Should I process your payment now?"
 
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        logger.info("In SearchACharityByCategoryIntentHandler")
-
-        handler_input.response_builder.speak(data.ASK_CHARITY_CATEGORY_SPEECH).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.ASK_CHARITY_CATEGORY_SPEECH))
-
-        return handler_input.response_builder.response
-
-
-class GetDonationInfoIntentHandler(AbstractRequestHandler):
-    """Handler for searching for a charity by name."""
-
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("GetDonationInfoIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        logger.info("In GetDonationInfoIntentHandler")
-
-        handler_input.response_builder.speak(data.DONATION_MADE_SPEECH).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.DONATION_MADE_SPEECH))
+        handler_input.response_builder.speak(message).ask(
+            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
 
         return handler_input.response_builder.response
 
@@ -364,9 +352,9 @@ class JoseIntentHandler(AbstractRequestHandler):
                                 'authorizeAttributes': {
                                     '@type': 'AuthorizeAttributes',
                                     '@version': '2',
-                                    'authorizationReferenceId': 'sdfwr3423fsxfsrq43',
+                                    'authorizationReferenceId': 'sdfwr3423fsxfsrq49',
                                     'authorizationAmount': {
-                                        '@type': 'AuthorizeAttributes',
+                                        '@type': 'Price',
                                         '@version': '2',
                                         'amount': '9',
                                         'currencyCode': 'USD'
@@ -378,12 +366,11 @@ class JoseIntentHandler(AbstractRequestHandler):
                     'sellerOrderAttributes': {
                                     '@type': 'SellerOrderAttributes',
                                     '@version': '2',
-                                    'sellerOrderId': 'ABC-000-123234',
+                                    'sellerOrderId': 'ABC-000-123239',
                                     'storeName': 'No Nicks',
                                     'customInformation': '',
                                     'sellerNote': 'Thanks for shaving with No Nicks'
                                 }
-
                 },
                 token="correlationToken")
         ).response
@@ -420,33 +407,47 @@ class SetupConnectionsResponseHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         logger.info("In SetupConnectionsResponseHandler 2")
 
-        #connectionResponsePayload = handler_input.request_envelope.request.payload
-        #connectionResponseStatusCode = handler_input.request_envelope.request.status.code
+        connectionResponsePayload = handler_input.request_envelope.request.payload
+        connectionResponseStatusCode = handler_input.request_envelope.request.status.code
+
+        logger.info(handler_input)
+        logger.info(handler_input.request_envelope)
+        logger.info(handler_input.request_envelope.request)
+        logger.info("End of requestttt!")
+        logger.info(connectionResponseStatusCode)
+        logger.info(handler_input.request_envelope.request.payload)
+        # logger.info(ConnectionsRequest.name)
 
         # If there are integration or runtime errors, do not charge the payment method
-        # if connectionResponseStatusCode != 200:
-        #    logger.info("Error inside SetupConnectionsResponseHandler Status Code != 200")
-        # return error.handleErrors( handlerInput )
-        # logger.info(connectionResponsePayload)
-        # logger.info(connectionResponseStatusCode)
-
-        # Permission check
-        JoseIntentHandler.handleMissingAmazonPayPermission(self, handler_input)
+        if str(connectionResponseStatusCode) != '200':
+            logger.info(
+                "Error inside SetupConnectionsResponseHandler Status Code != 200")
+            return logger.info("Error inside SetupConnectionsResponseHandler Status Code != 200")
 
         # Get the billingAgreementId and billingAgreementStatus from the Setup Connections.Response
-        billingAgreementId = 'BA12345'
-        billingAgreementStatus = 'OPEN'
+        billingAgreementId = connectionResponsePayload['billingAgreementDetails']['billingAgreementId']
+        logger.info(billingAgreementId)
+        billingAgreementStatus = connectionResponsePayload[
+            'billingAgreementDetails']['billingAgreementStatus']
 
-        # logger.info(billingAgreementStatus)
+        # If billingAgreementStatus is valid, Charge the payment method
+        if str(billingAgreementStatus) == 'OPEN':
+            logger.info("OPENN!")
 
-        # if ( billingAgreementStatus === 'OPEN' ):
-        logger.info("HEYY!")
-        # logger.info(handler_input.attributes_manager.session_attributes["productType"])
+            # Save billingAgreementId attributes because directives will close the session
+            session_attr = handler_input.attributes_manager.session_attributes
+            session_attr["billingAgreementId"] = billingAgreementId
+            session_attr["setup"] = True
+            logger.info("Saved Info")
+            #attributesManager = handler_input
+            # print(attributesManager)
+            #attributes = attributesManager.persistent_attributes
+            #attributes.productType = productType
+            # attributesManager.setSessionAttributes(attributes)
 
-        handler_input.response_builder.speak(
-            "Your Donation will be made using amazon pay. Do you want to check out now?").set_should_end_session(False)
-
-        return handler_input.response_builder.response
+            handler_input.response_builder.speak(
+                "Your Donation will be made using amazon pay. Do you want to check out now?").set_should_end_session(False)
+            return handler_input.response_builder.response
 
 # You requested the Charge directive and are now receiving the Connections.Response
 
@@ -467,20 +468,20 @@ class ChargeConnectionsResponseHandler(AbstractRequestHandler):
         connectionResponseStatusCode = handler_input.request_envelope.request.status.code
 
         # If there are integration or runtime errors, do not charge the payment method
-        # if connectionResponseStatusCode != 200:
-        #    logger.info("Error inside SetupConnectionsResponseHandler Status Code != 200")
-        # return error.handleErrors( handlerInput )
-        logger.info(connectionResponsePayload)
-        logger.info(connectionResponseStatusCode)
-
-        # Permission check
-        JoseIntentHandler.handleMissingAmazonPayPermission(self, handler_input)
+        if str(connectionResponseStatusCode) != '200':
+            logger.info(
+                "Error inside SetupConnectionsResponseHandler Status Code != 200")
+            # return error.handleErrors( handlerInput )
+            # logger.info(connectionResponsePayload)
+            # logger.info(connectionResponseStatusCode)
 
         # Get the billingAgreementId and billingAgreementStatus from the Setup Connections.Response
         #billingAgreementId = 'BA12345'
         #billingAgreementStatus = 'OPEN'
 
-        # logger.info(billingAgreementStatus)
+        logger.info("retrieving session variable")
+        logger.info(
+            handler_input.attributes_manager.session_attributes["billingAgreementId"])
 
         # if ( billingAgreementStatus === 'OPEN' ):
         # logger.info("HEYY!")
@@ -588,16 +589,13 @@ class ResponseLogger(AbstractResponseInterceptor):
 
 # Register intent handlers
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(GetCharityInfoIntentHandler())
-sb.add_request_handler(SearchACharityIntentHandler())
-sb.add_request_handler(SearchACharityByNameIntentHandler())
-sb.add_request_handler(SearchACharityByCategoryIntentHandler())
-sb.add_request_handler(GetDonationInfoIntentHandler())
-sb.add_request_handler(HelpIntentHandler())
+sb.add_request_handler(GetNextCharityIntentHandler())
+sb.add_request_handler(MakeDonationIntentHandler())
 sb.add_request_handler(YesIntentHandler())
 sb.add_request_handler(JoseIntentHandler())
 sb.add_request_handler(SetupConnectionsResponseHandler())
 sb.add_request_handler(ChargeConnectionsResponseHandler())
+sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
