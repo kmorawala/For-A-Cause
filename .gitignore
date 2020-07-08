@@ -4,16 +4,9 @@
 !LICENSE
 !README.md
 !requirements.txt
-!/alexa
-!/registrationform/
-!/registrationform/*
-!/registrationform/css/
-!/registrationform/css/*
-!/registrationform/img/
-!/registrationform/img/*
-!/registrationform/scss/
-!/registrationform/scss/*
-!/registrationform/vendor/
-!/registrationform/vendor/*
+!/Alexa Skill/
+!/Alexa Skill/*
 !/Images/
 !/Images/*
+!/Flask App/
+!/Flask App/*
