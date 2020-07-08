@@ -152,7 +152,7 @@ class GetCharityInfoIntentHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("GetCharityInfoIntent")(handler_input)
+        return is_intent_name("GetCharityInfoIntent")(handler_input) or is_intent_name("AMAZON.NoIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -235,8 +235,18 @@ class YesIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+        try:
+            amount_donated
+        except:
+            message = "Sorry, would you like to donate to " + \
+                charity_name + " or explore next charity?"
 
-        return amazonPayCharge(self, handler_input, charity_name,  amount_donated)
+            handler_input.response_builder.speak(message).ask(
+                data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
+
+            return handler_input.response_builder.response
+        else:
+            return amazonPayCharge(self, handler_input, charity_name,  amount_donated)
 
 
 def amazonPaySetup(self, handler_input, charity_name, amount_donated):
@@ -535,7 +545,6 @@ sb.add_request_handler(GetNextCharityIntentHandler())
 sb.add_request_handler(GetCharityInfoIntentHandler())
 sb.add_request_handler(MakeDonationIntentHandler())
 sb.add_request_handler(YesIntentHandler())
-# sb.add_request_handler(JoseIntentHandler())
 sb.add_request_handler(SetupConnectionsResponseHandler())
 sb.add_request_handler(ChargeConnectionsResponseHandler())
 sb.add_request_handler(HelpIntentHandler())
