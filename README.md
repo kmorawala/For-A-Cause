@@ -6,7 +6,7 @@ This project is part of the AWS Hackathon submissions that enables users to disc
 * An AWS DynamoDB database that stores the information
 * An Alexa voice skill that allows the users to easily discover charities that are meaningful to them with an option to make a donations via Amazon Pay.
 
-Our system architechure is as follows:
+The system architechure and data flow are as follows:
 <table><tr><td>
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/System%20Diagram.png" />
 </td></tr></table>
