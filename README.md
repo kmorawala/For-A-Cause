@@ -6,6 +6,11 @@ This project is part of the AWS Hackathon submissions that enables users to disc
 * An AWS DynamoDB database that stores the information
 * An Alexa voice skill that allows the users to easily discover charities that are meaningful to them with an option to make a donations via Amazon Pay.
 
+The system architechure and data flow are as follows:
+<table><tr><td>
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/System%20Diagram.png" />
+</td></tr></table>
+
 ## Inspiration
 Our project’s inspiration came from when we were looking for a way to donate to a certain charity in a quick and easy manner via voice interactions. In this world of technology, we did not come across any skill that was comprehensive enough to support both users and charities while allowing donations to be made via voice commands. Once we discovered this gap, we quickly brainstormed some ideas and decided to create a blueprint for this project.
 
