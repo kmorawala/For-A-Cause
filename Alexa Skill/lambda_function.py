@@ -203,14 +203,15 @@ class MakeDonationIntentHandler(AbstractRequestHandler):
             charity_id, table_name, int(total_contribution))
         logger.info(total_contribution)
 
-        # message = data.DONATION_MADE_SPEECH + charity_name + " for "+ str(amount_donated) +  " dollars. Should I process your payment now?"
-        # logger.info(message)
+        message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
+            str(amount_donated) + " dollars. Should I process your payment now?"
+        logger.info(message)
 
-        # handler_input.response_builder.speak(message).ask(
-        # data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
+        handler_input.response_builder.speak(message).ask(
+            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
 
-        # return handler_input.response_builder.response
-        return amazonPaySetup(self, handler_input, charity_name)
+        return handler_input.response_builder.response
+        # return amazonPaySetup(self, handler_input, charity_name)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -257,8 +258,8 @@ def amazonPaySetup(self, handler_input, charity_name):
     """Customer has shown intent to purchase, call Setup to grab the customers shipping address detail """
 
     # Permission check
-    # handleMissingAmazonPayPermission(self, handler_input):
-    # return CancelOrStopIntentHandler(self, handler_input)
+    if handleMissingAmazonPayPermission(self, handler_input) is False:
+        return CancelOrStopIntentHandler(self, handler_input)
     permissions = handler_input.request_envelope.context.system.user.permissions
     amazonPayPermission = permissions.scopes['payments:autopay_consent']
 
