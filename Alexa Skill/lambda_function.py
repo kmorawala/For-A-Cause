@@ -201,17 +201,16 @@ class MakeDonationIntentHandler(AbstractRequestHandler):
         # database query to update the total contribution
         update_total_contribution(
             charity_id, table_name, int(total_contribution))
-        logger.info(total_contribution)
+        # logger.info(total_contribution)
 
-        message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
-            str(amount_donated) + " dollars. Should I process your payment now?"
-        logger.info(message)
+        # message = data.DONATION_MADE_SPEECH + charity_name + " for "+ str(amount_donated) +  " dollars. Setting up your payment now I process your payment now?"
+        # logger.info(message)
 
-        handler_input.response_builder.speak(message).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
+        # handler_input.response_builder.speak(message).ask(
+        #     data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
 
-        return handler_input.response_builder.response
-        # return amazonPaySetup(self, handler_input, charity_name)
+        # return handler_input.response_builder.response
+        return amazonPaySetup(self, handler_input, charity_name)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -251,23 +250,17 @@ class YesIntentHandler(AbstractRequestHandler):
 
             return handler_input.response_builder.response
         else:
+            # return amazonPaySetup(self, handler_input, charity_name)
             return amazonPayCharge(self, handler_input, charity_name,  amount_donated)
 
 
 def amazonPaySetup(self, handler_input, charity_name):
     """Customer has shown intent to purchase, call Setup to grab the customers shipping address detail """
 
-    # Permission check
     if handleMissingAmazonPayPermission(self, handler_input) is False:
-        return CancelOrStopIntentHandler(self, handler_input)
-    permissions = handler_input.request_envelope.context.system.user.permissions
-    amazonPayPermission = permissions.scopes['payments:autopay_consent']
-
-    if amazonPayPermission.status == 'PermissionStatus.DENIED':
-        handler_input.response_builder.speak(data.PERMISSION_DENIED).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.PERMISSION_DENIED))
+        handler_input.response_builder.speak(data.PERMISSION_DENIED).set_card(
+            AskForPermissionsConsentCard(['payments:autopay_consent'])).set_should_end_session(True)
         return handler_input.response_builder.response
-        # return handlerInput.responseBuilder.speak( 'To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app.' ).withAskForPermissionsConsentCard( [ 'payments:autopay_consent' ] ).getResponse();
 
     foo = handler_input.request_envelope.request.locale
 
@@ -275,7 +268,15 @@ def amazonPaySetup(self, handler_input, charity_name):
     #setupPayload = payload_builder.createSetupPayload( handler_input.request_envelope.request.locale )
     #setupRequestDirective = directive_builder.createDirective( config.GLOBAL['directiveSetupName'], setupPayload, token )
 
-    return handler_input.response_builder.add_directive(
+    message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
+        str(amount_donated) + \
+        " dollars. Setting up your payment now I process your payment now?"
+    logger.info(message)
+
+    handler_input.response_builder.speak(message).ask(
+        data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
+
+    handler_input.response_builder.add_directive(
         SendRequestDirective(
             name="Setup",
             payload={
@@ -303,24 +304,8 @@ def amazonPaySetup(self, handler_input, charity_name):
                             }
             },
             token="correlationToken")
-    ).response
-
-# class JoseIntentHandler(AbstractRequestHandler):
-
-#     """Handler for searching for a charity by name."""
-#     def can_handle(self, handler_input):
-#         # type: (HandlerInput) -> bool
-#         return is_intent_name("JoseIntentHandler")(handler_input)
-
-#     def handle(self, handler_input):
-#         # type: (HandlerInput) -> Response
-#         logger.info("In JoseIntentHandler")
-#         logger.info(config.INIT['bucketName'])
-#         #handler_input.response_builder.speak("Hello World").ask(
-#         #    "Do you want to continue").set_card(SimpleCard(data.SKILL_NAME, data.DONATION_MADE_SPEECH))
-
-#         #return handler_input.response_builder.response
-#         return amazonPaySetup(self, handler_input, "Car")
+    )
+    return handler_input.response_builder.response
 
 # Customer has requested checkout and wants to be charged
 
@@ -328,7 +313,10 @@ def amazonPaySetup(self, handler_input, charity_name):
 def amazonPayCharge(self, handler_input, charity_name, amount_donated):
 
     # Permission check
-    handleMissingAmazonPayPermission(self, handler_input)
+    if handleMissingAmazonPayPermission(self, handler_input) is False:
+        handler_input.response_builder.speak(data.PERMISSION_DENIED).set_card(
+            AskForPermissionsConsentCard(['payments:autopay_consent'])).set_should_end_session(True)
+        return handler_input.response_builder.response
 
     permissions = handler_input.request_envelope.context.system.user.permissions
     amazonPayPermission = permissions.scopes['payments:autopay_consent']
@@ -336,12 +324,12 @@ def amazonPayCharge(self, handler_input, charity_name, amount_donated):
     logger.info("In amazonPayCharge")
     logger.info(amazonPayPermission.status)
 
-    if amazonPayPermission.status == 'PermissionStatus.DENIED':
-        logger.info("Inside amazonPayPermission IF Statement")
-        handler_input.response_builder.speak("No permissions").ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.DONATION_MADE_SPEECH))
-        return handler_input.response_builder.response
-        # return handlerInput.responseBuilder.speak( 'To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app.' ).withAskForPermissionsConsentCard( [ 'payments:autopay_consent' ] ).getResponse();
+    # if amazonPayPermission.status == 'PermissionStatus.DENIED':
+    #     logger.info("Inside amazonPayPermission IF Statement")
+    #     handler_input.response_builder.speak("No permissions").ask(
+    #     data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.DONATION_MADE_SPEECH))
+    #     return handler_input.response_builder.response
+    # return handlerInput.responseBuilder.speak( 'To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app.' ).withAskForPermissionsConsentCard( [ 'payments:autopay_consent' ] ).getResponse();
 
     # If you have a valid billing agreement from a previous session, skip the Setup action and call the Charge action instead
     token = 'correlationToken'
@@ -388,9 +376,9 @@ def handleMissingAmazonPayPermission(self, handler_input):
     amazonPayPermission = permissions.scopes['payments:autopay_consent']
     logger.info(str(amazonPayPermission.status))
     if str(amazonPayPermission.status) == 'PermissionStatus.DENIED':
-        handler_input.response_builder.speak("To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app. Please launch this app again once you have enabled Amazon pay!").set_card(
-            AskForPermissionsConsentCard(['payments:autopay_consent'])).set_should_end_session(True)
-        return handler_input.response_builder.response
+        return False
+    else:
+        return True
 
 
 class SetupConnectionsResponseHandler(AbstractRequestHandler):
