@@ -27,7 +27,6 @@ from alexa import data, util, payload_builder, config, directive_builder
 # DB query functions
 from query_functions import *
 
-# added for remembering attributes
 import os
 from ask_sdk_s3.adapter import S3Adapter
 s3_adapter = S3Adapter(bucket_name=os.environ["S3_PERSISTENCE_BUCKET"])
@@ -74,7 +73,7 @@ def get_next_charity(self, handler_input):
     attr = handler_input.attributes_manager.persistent_attributes
     attributes_are_present = ("id" in attr)
 
-    table_name = "Animals"
+    table_name = "CharityInfo"
     # below global variables will be used in other classes/functions
 
     global charity_id
@@ -86,8 +85,10 @@ def get_next_charity(self, handler_input):
     else:
         charity_id = 1
 
-    max_charity_id = get_item_count(table_name)
-    if charity_id > max_charity_id:
+    max_rows = get_item_count(table_name)
+    logger.info('max_charity_id')
+    logger.info(max_rows)
+    if charity_id > max_rows:
         charity_id = 1
 
     message = get_charity_info(self, handler_input, charity_id, table_name)
@@ -116,13 +117,14 @@ def get_charity_info(self, handler_input, charity_id, table_name):
     logger.info("In get_charity_info function")
 
     global charity_name
+    logger.info("charity_id")
+    logger.info(charity_id)
 
     # DynamoDB query
     charity_name, charity_mission = query_next_item(charity_id, table_name)
 
     # charity_name, charity_mission = query_next_item(2, "Animals")
-    message = charity_name + ". " + data.MISSION_MSG + \
-        charity_mission + " " + data.USER_OPTION
+    message = charity_name + ". " + charity_mission + " " + data.USER_OPTION
 
     return message
 
@@ -160,7 +162,7 @@ class GetCharityInfoIntentHandler(AbstractRequestHandler):
         # logger.info(charity_id)
         # logger.info(charity_name)
 
-        table_name = "Animals"
+        table_name = "CharityInfo"
         message = "Our charity is " + \
             get_charity_info(self, handler_input, charity_id, table_name)
 
@@ -186,7 +188,7 @@ class MakeDonationIntentHandler(AbstractRequestHandler):
         logger.info(charity_name)
 
         # database query to get the total contribution made to the charity
-        table_name = "Animals"
+        table_name = "CharityInfo"
         total_contribution = get_total_contribution(charity_id, table_name)
 
         # access the user spoken slot value for the amount of contribution
@@ -199,14 +201,16 @@ class MakeDonationIntentHandler(AbstractRequestHandler):
         # database query to update the total contribution
         update_total_contribution(
             charity_id, table_name, int(total_contribution))
+        logger.info(total_contribution)
 
-        message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
-            str(amount_donated) + " dollars. Should I process your payment now?"
+        # message = data.DONATION_MADE_SPEECH + charity_name + " for "+ str(amount_donated) +  " dollars. Should I process your payment now?"
+        # logger.info(message)
 
-        handler_input.response_builder.speak(message).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
+        # handler_input.response_builder.speak(message).ask(
+        # data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
 
-        return handler_input.response_builder.response
+        # return handler_input.response_builder.response
+        return amazonPaySetup(self, handler_input, charity_name)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -249,18 +253,18 @@ class YesIntentHandler(AbstractRequestHandler):
             return amazonPayCharge(self, handler_input, charity_name,  amount_donated)
 
 
-def amazonPaySetup(self, handler_input, charity_name, amount_donated):
+def amazonPaySetup(self, handler_input, charity_name):
     """Customer has shown intent to purchase, call Setup to grab the customers shipping address detail """
 
     # Permission check
-    handleMissingAmazonPayPermission(self, handler_input)
-
+    # handleMissingAmazonPayPermission(self, handler_input):
+    # return CancelOrStopIntentHandler(self, handler_input)
     permissions = handler_input.request_envelope.context.system.user.permissions
     amazonPayPermission = permissions.scopes['payments:autopay_consent']
 
     if amazonPayPermission.status == 'PermissionStatus.DENIED':
-        handler_input.response_builder.speak("No permissions").ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.DONATION_MADE_SPEECH))
+        handler_input.response_builder.speak(data.PERMISSION_DENIED).ask(
+            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.PERMISSION_DENIED))
         return handler_input.response_builder.response
         # return handlerInput.responseBuilder.speak( 'To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app.' ).withAskForPermissionsConsentCard( [ 'payments:autopay_consent' ] ).getResponse();
 
@@ -286,13 +290,13 @@ def amazonPaySetup(self, handler_input, charity_name, amount_donated):
                             'billingAgreementAttributes': {
                                 '@type': 'BillingAgreementAttributes',
                                 '@version': '2',
-                                'sellerNote': 'Thanks for shaving with No Nicks',
+                                'sellerNote': 'Thanks for your donation to ' + charity_name,
                                 'platformId': None,
                                 'sellerBillingAgreementAttributes': {
                                     '@type': 'SellerBillingAgreementAttributes',
                                     '@version': '2',
                                     'sellerBillingAgreementId': 'BA12345',
-                                    'storeName': 'No Nicks',
+                                    'storeName': charity_name,
                                     'customInformation': ''
                                 }
                             }
@@ -353,24 +357,24 @@ def amazonPayCharge(self, handler_input, charity_name, amount_donated):
                             'authorizeAttributes': {
                                 '@type': 'AuthorizeAttributes',
                                 '@version': '2',
-                                'authorizationReferenceId': 'sdfwr3423fsxfsrq42',
+                                'authorizationReferenceId': 'sdfwr3423fsxfsrq45',
                                 'authorizationAmount': {
                                     '@type': 'Price',
                                     '@version': '2',
-                                    'amount': '9',
+                                    'amount': str(amount_donated),
                                     'currencyCode': 'USD'
                                 },
                                 'transactionTimeout': 0,
                                 'sellerAuthorizationNote': 'Billing Agreement Seller Note',
-                                'softDescriptor': 'No Nicks'
+                                'softDescriptor': charity_name
                             },
                 'sellerOrderAttributes': {
                                 '@type': 'SellerOrderAttributes',
                                 '@version': '2',
-                                'sellerOrderId': 'ABC-000-123232',
-                                'storeName': 'No Nicks',
+                                'sellerOrderId': 'ABC-000-123235',
+                                'storeName': charity_name,
                                 'customInformation': '',
-                                'sellerNote': 'Thanks for shaving with No Nicks'
+                                'sellerNote': 'Thanks for donating to ' + charity_name
                             }
             },
             token="correlationToken")
@@ -383,8 +387,8 @@ def handleMissingAmazonPayPermission(self, handler_input):
     amazonPayPermission = permissions.scopes['payments:autopay_consent']
     logger.info(str(amazonPayPermission.status))
     if str(amazonPayPermission.status) == 'PermissionStatus.DENIED':
-        handler_input.response_builder.speak("To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app.").set_card(
-            AskForPermissionsConsentCard(['payments:autopay_consent']))
+        handler_input.response_builder.speak("To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app. Please launch this app again once you have enabled Amazon pay!").set_card(
+            AskForPermissionsConsentCard(['payments:autopay_consent'])).set_should_end_session(True)
         return handler_input.response_builder.response
 
 
@@ -398,7 +402,9 @@ class SetupConnectionsResponseHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         connectionResponsePayload = handler_input.request_envelope.request.payload
+        logger.info(str(connectionResponsePayload))
         connectionResponseStatusCode = handler_input.request_envelope.request.status.code
+        logger.info(str(connectionResponseStatusCode))
 
         # If there are integration or runtime errors, do not charge the payment method
         if str(connectionResponseStatusCode) != '200':
@@ -418,9 +424,15 @@ class SetupConnectionsResponseHandler(AbstractRequestHandler):
             session_attr["billingAgreementId"] = billingAgreementId
             session_attr["setup"] = True
 
-            handler_input.response_builder.speak(
-                "Your Donation will be made using amazon pay. Do you want to check out now?").set_should_end_session(False)
+            message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
+                str(amount_donated) + \
+                " dollars. Should I process your payment now?"
+            handler_input.response_builder.speak(message).set_should_end_session(False).ask(
+                data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
             return handler_input.response_builder.response
+
+            # handler_input.response_builder.speak(message).set_should_end_session(False)
+            # return handler_input.response_builder.response
 
 # You requested the Charge directive and are now receiving the Connections.Response
 
