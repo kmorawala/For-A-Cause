@@ -34,7 +34,7 @@ Please refer to the "How to set up" section to set up before using it.
 
 By invoking the wake word "Alexa, open for a cause", the user can simply get started. The app provides necessary help instructions as the users interact.
 
-Similarly, the charities can access the registration form here: TBD
+Similarly, the charities can access the registration form [here](http://tinyurl.com/for-a-cause).
 
 ## Challenges we ran into
 All of our team members do not have extensive experience in this area, and some of us are completely new to developing a voice skill. The challenge was to familiarize ourselves quickly with new concepts, build and test an app. We found this challenge to be fun and rewarding.
