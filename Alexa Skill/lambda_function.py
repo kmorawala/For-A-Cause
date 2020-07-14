@@ -35,8 +35,6 @@ s3_adapter = S3Adapter(bucket_name=os.environ["S3_PERSISTENCE_BUCKET"])
 sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-# global charity_name
-# global charity_id
 
 # Request Handler classes
 
@@ -51,21 +49,18 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         logger.info("In LaunchRequestHandler")
-        # global charity_name
-        # global charity_id
 
         message = data.WELCOME_MESSAGE + " " + data.TODAYS_CHARITY_MESSAGE + \
             get_next_charity(self, handler_input)
 
         handler_input.response_builder.speak(message).ask(message)
-        # logger.info(charity_id)
-        # logger.info(charity_name)
 
         return handler_input.response_builder.response
 
 
 def get_next_charity(self, handler_input):
     """Function used for going to the next charity in the database."""
+    # type: (HandlerInput) -> String
 
     logger.info("In get_next_charity function")
 
@@ -85,6 +80,11 @@ def get_next_charity(self, handler_input):
     else:
         charity_id = 1
 
+    # Database query to see how many rows does the table have.
+    # IMPORTANT: This DynamoDB query only gets updated every few hours and is not real-time
+    # We did not  incorporate the functionality for the charities to delete their information
+    # from the database via the  website, hence, the  number rows should only increase with time and not decrease
+
     max_rows = get_item_count(table_name)
     logger.info('max_charity_id')
     logger.info(max_rows)
@@ -92,12 +92,6 @@ def get_next_charity(self, handler_input):
         charity_id = 1
 
     message = get_charity_info(self, handler_input, charity_id, table_name)
-    # DynamoDB query
-    # charity_name, charity_mission = query_next_item(charity_id, table_name)
-    # charity_name, charity_mission = query_next_item(2, "Animals")
-
-    # message = charity_name + ". " + data.MISSION_MSG + charity_mission + " " + data.USER_OPTION
-    # logger.info(message)
 
     # update and save persistent_attributes
     attr = {
@@ -113,7 +107,9 @@ def get_next_charity(self, handler_input):
 
 
 def get_charity_info(self, handler_input, charity_id, table_name):
-    """Function used for going to the next charity in the database."""
+    """Function used for getting a charity's information from the database, given a table name and id."""
+    # type: (HandlerInput, Integer, String) -> String
+
     logger.info("In get_charity_info function")
 
     global charity_name
@@ -123,7 +119,6 @@ def get_charity_info(self, handler_input, charity_id, table_name):
     # DynamoDB query
     charity_name, charity_mission = query_next_item(charity_id, table_name)
 
-    # charity_name, charity_mission = query_next_item(2, "Animals")
     message = charity_name + ". " + charity_mission + " " + data.USER_OPTION
 
     return message
@@ -140,8 +135,7 @@ class GetNextCharityIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         logger.info("In GetNextCharityIntentHandler")
 
-        message = "Our next charity is " + \
-            get_next_charity(self, handler_input)
+        message = data.NEXT_CHARITY + get_next_charity(self, handler_input)
 
         handler_input.response_builder.speak(message).ask(
             data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
@@ -150,7 +144,7 @@ class GetNextCharityIntentHandler(AbstractRequestHandler):
 
 
 class GetCharityInfoIntentHandler(AbstractRequestHandler):
-    """Handler for exploring the current charity."""
+    """Handler for exploring information about the current charity."""
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -158,6 +152,7 @@ class GetCharityInfoIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+
         logger.info("In GetCharityInfoIntentHandler")
         # logger.info(charity_id)
         # logger.info(charity_name)
@@ -166,8 +161,6 @@ class GetCharityInfoIntentHandler(AbstractRequestHandler):
         message = "Our charity is " + \
             get_charity_info(self, handler_input, charity_id, table_name)
 
-        # message = "Our charity is " + get_charity_info(self, handler_input, charity_id, table_name)
-
         handler_input.response_builder.speak(message).ask(
             data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
 
@@ -175,7 +168,7 @@ class GetCharityInfoIntentHandler(AbstractRequestHandler):
 
 
 class MakeDonationIntentHandler(AbstractRequestHandler):
-    """Handler for searching for a charity by name."""
+    """Handler for making a donation to the current charity."""
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -187,30 +180,14 @@ class MakeDonationIntentHandler(AbstractRequestHandler):
         logger.info(charity_id)
         logger.info(charity_name)
 
-        # database query to get the total contribution made to the charity
-        table_name = "CharityInfo"
-        total_contribution = get_total_contribution(charity_id, table_name)
-
         # access the user spoken slot value for the amount of contribution
         slots = handler_input.request_envelope.request.intent.slots
         amount_donated_list = slots["DonationAmount"].value
         global amount_donated
         amount_donated = int(amount_donated_list)
-        total_contribution = total_contribution + int(amount_donated)
 
-        # database query to update the total contribution
-        update_total_contribution(
-            charity_id, table_name, int(total_contribution))
-        # logger.info(total_contribution)
-
-        # message = data.DONATION_MADE_SPEECH + charity_name + " for "+ str(amount_donated) +  " dollars. Setting up your payment now I process your payment now?"
-        # logger.info(message)
-
-        # handler_input.response_builder.speak(message).ask(
-        #     data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
-
-        # return handler_input.response_builder.response
-        return amazonPaySetup(self, handler_input, charity_name)
+        # set up the amazon pay and return the response
+        return set_up_amazon_pay(self, handler_input, charity_name)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -239,9 +216,12 @@ class YesIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+
+        # error checking to ensure the amount to be donated is provided ahead of time
         try:
             amount_donated
         except:
+            # if no amount_donated is provided, go back to the default prompt
             message = "Sorry, would you like to donate to " + \
                 charity_name + " or explore next charity?"
 
@@ -250,14 +230,15 @@ class YesIntentHandler(AbstractRequestHandler):
 
             return handler_input.response_builder.response
         else:
-            # return amazonPaySetup(self, handler_input, charity_name)
-            return amazonPayCharge(self, handler_input, charity_name,  amount_donated)
+            return charge_amazon_pay(self, handler_input, charity_name,  amount_donated)
 
 
-def amazonPaySetup(self, handler_input, charity_name):
-    """Customer has shown intent to purchase, call Setup to grab the customers shipping address detail """
+def set_up_amazon_pay(self, handler_input, charity_name):
+    """Customer has shown intent to purchase, call Setup to grab the customers shipping address detail and check amazon pay is set up"""
+    # type: (HandlerInput, String) -> Response
 
-    if handleMissingAmazonPayPermission(self, handler_input) is False:
+    # Permission check
+    if is_missing_amazon_pay_permission(self, handler_input) is False:
         handler_input.response_builder.speak(data.PERMISSION_DENIED).set_card(
             AskForPermissionsConsentCard(['payments:autopay_consent'])).set_should_end_session(True)
         return handler_input.response_builder.response
@@ -265,12 +246,9 @@ def amazonPaySetup(self, handler_input, charity_name):
     foo = handler_input.request_envelope.request.locale
 
     token = 'correlationToken'
-    #setupPayload = payload_builder.createSetupPayload( handler_input.request_envelope.request.locale )
-    #setupRequestDirective = directive_builder.createDirective( config.GLOBAL['directiveSetupName'], setupPayload, token )
 
     message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
-        str(amount_donated) + \
-        " dollars. Setting up your payment now I process your payment now?"
+        str(amount_donated) + " dollars. Should I process your payment now?"
     logger.info(message)
 
     handler_input.response_builder.speak(message).ask(
@@ -307,13 +285,13 @@ def amazonPaySetup(self, handler_input, charity_name):
     )
     return handler_input.response_builder.response
 
-# Customer has requested checkout and wants to be charged
 
-
-def amazonPayCharge(self, handler_input, charity_name, amount_donated):
+def charge_amazon_pay(self, handler_input, charity_name, amount_donated):
+    ''' Customer has requested checkout and wants to be charged'''
+    # type: (HandlerInput, String, Integer) -> Response
 
     # Permission check
-    if handleMissingAmazonPayPermission(self, handler_input) is False:
+    if is_missing_amazon_pay_permission(self, handler_input) is False:
         handler_input.response_builder.speak(data.PERMISSION_DENIED).set_card(
             AskForPermissionsConsentCard(['payments:autopay_consent'])).set_should_end_session(True)
         return handler_input.response_builder.response
@@ -321,18 +299,21 @@ def amazonPayCharge(self, handler_input, charity_name, amount_donated):
     permissions = handler_input.request_envelope.context.system.user.permissions
     amazonPayPermission = permissions.scopes['payments:autopay_consent']
 
-    logger.info("In amazonPayCharge")
+    logger.info("In charge_amazon_pay")
     logger.info(amazonPayPermission.status)
-
-    # if amazonPayPermission.status == 'PermissionStatus.DENIED':
-    #     logger.info("Inside amazonPayPermission IF Statement")
-    #     handler_input.response_builder.speak("No permissions").ask(
-    #     data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.DONATION_MADE_SPEECH))
-    #     return handler_input.response_builder.response
-    # return handlerInput.responseBuilder.speak( 'To make purchases in this skill, you need to enable Amazon Pay and turn on voice purchasing. To help, I sent a card to your Alexa app.' ).withAskForPermissionsConsentCard( [ 'payments:autopay_consent' ] ).getResponse();
 
     # If you have a valid billing agreement from a previous session, skip the Setup action and call the Charge action instead
     token = 'correlationToken'
+
+    # database query to get the total contribution made to the charity
+    table_name = "CharityInfo"
+    total_contribution = get_total_contribution(charity_id, table_name)
+
+    # access the user spoken slot value for the amount of contribution
+    total_contribution = total_contribution + int(amount_donated)
+
+    # database query to update the total contribution
+    update_total_contribution(charity_id, table_name, int(total_contribution))
 
     return handler_input.response_builder.add_directive(
         SendRequestDirective(
@@ -370,10 +351,15 @@ def amazonPayCharge(self, handler_input, charity_name, amount_donated):
     ).response
 
 
-def handleMissingAmazonPayPermission(self, handler_input):
-    logger.info("In handleMissingAmazonPayPermission")
+def is_missing_amazon_pay_permission(self, handler_input):
+    '''determines if the amazon pay set up permission is allowed or denied'''
+    # type: (HandlerInput) -> bool
+
+    logger.info("In is_missing_amazon_pay_permission")
+
     permissions = handler_input.request_envelope.context.system.user.permissions
     amazonPayPermission = permissions.scopes['payments:autopay_consent']
+
     logger.info(str(amazonPayPermission.status))
     if str(amazonPayPermission.status) == 'PermissionStatus.DENIED':
         return False
@@ -413,15 +399,14 @@ class SetupConnectionsResponseHandler(AbstractRequestHandler):
             session_attr["billingAgreementId"] = billingAgreementId
             session_attr["setup"] = True
 
+            # The following question should result in YesIntentHandler, which will proceed to the charging process
             message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
                 str(amount_donated) + \
                 " dollars. Should I process your payment now?"
+
             handler_input.response_builder.speak(message).set_should_end_session(False).ask(
                 data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
             return handler_input.response_builder.response
-
-            # handler_input.response_builder.speak(message).set_should_end_session(False)
-            # return handler_input.response_builder.response
 
 # You requested the Charge directive and are now receiving the Connections.Response
 
@@ -480,8 +465,10 @@ class FallbackIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         logger.info("In FallbackIntentHandler")
 
-        handler_input.response_builder.speak(data.FALLBACK_MESSAGE).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, data.FALLBACK_MESSAGE))
+        message = data.FALLBACK_MESSAGE + " " + data.HELP_MESSAGE
+
+        handler_input.response_builder.speak(message).ask(
+            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
 
         return handler_input.response_builder.response
 
@@ -516,8 +503,11 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         # type: (HandlerInput, Exception) -> Response
         logger.info("In CatchAllExceptionHandler")
         logger.error(exception, exc_info=True)
-        handler_input.response_builder.speak(FALLBACK_ANSWER).ask(
-            HELP_REPROMPT)
+
+        message = data.FALLBACK_MESSAGE + " " + data.HELP_MESSAGE
+
+        handler_input.response_builder.speak(message).ask(
+            data.REPROMPT_SPEECH)
 
         return handler_input.response_builder.response
 
