@@ -55,8 +55,11 @@ We would like to add features such as monthly subscription, charity of the month
 ## References
 TBD
 
+## How to test it:
+Since this app has not been published for public, the hackathon judges have been provided the access to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) and once they login, click on **Cause** as follows:
 
-## How we set it up:
+
+## How we set up the Alexa Skill:
 
 * Alexa Skill
 Since this app has not been published into the market place, if you would like to use it on your Alexa devices, go to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) and click on **Create a Skill**
@@ -127,7 +130,3 @@ This is where you can type in or speak to test your app on the left side and you
 </td></tr></table>
 
 If you reached this point, you have successfully made a wonderful app on your Alexa device. Test it out now! Be sure that you are using the same amazon account for your device as well as for the developer console.
-
-* AmazonPay 
-
-* Flask App
