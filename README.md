@@ -130,3 +130,23 @@ This is where you can type in or speak to test your app on the left side and you
 </td></tr></table>
 
 If you reached this point, you have successfully made a wonderful app on your Alexa device. Test it out now! Be sure that you are using the same amazon account for your device as well as for the developer console.
+
+## How we set up DynamoDB:
+
+* DynamoDB
+For testing purposes, or to follow along with the creation process, these are the steps to set up DynamoDB like we did.
+[AWS Management Console -> DynamoDB](https://us-east-2.console.aws.amazon.com/dynamodb/home?region=us-east-2) and click on **Create table**
+
+<table><tr><td>
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DynamoDB/DynamoDBCreateTable.png" />
+</td></tr></table>
+
+Name the table "CharityInfo" and set the Primary Key to ID as a Number and then hit **Create**.
+DynamoDB doesn't need to know the other rows yet, unlike a regular RDS.
+
+<table><tr><td>
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DynamoDB/DynamoDBTableNameandID.png" />
+</td></tr></table>
+
+
+
