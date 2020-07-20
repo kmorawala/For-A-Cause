@@ -135,7 +135,7 @@ If you reached this point, you have successfully made a wonderful app on your Al
 
 * DynamoDB
 For testing purposes, or to follow along with the creation process, these are the steps to set up DynamoDB like we did.
-[AWS Management Console -> DynamoDB](https://us-east-2.console.aws.amazon.com/dynamodb/home?region=us-east-2) and click on **Create table**
+(AWS Management Console -> DynamoDB) and click on **Create table**
 
 <table><tr><td>
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DynamoDB/DynamoDBCreateTable.png" />
