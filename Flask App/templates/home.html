@@ -1,0 +1,291 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="#">For A Cause</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#About Us">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#registration">Registration</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#team">Our Team</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+     <header class="masthead text-center text-white">
+    <div class="masthead-content">
+      <div class="container">
+        <h1 class="masthead-heading mb-0">For A Cause</h1>
+        <h2 class="masthead-subheading mb-0">Charity Registration Site</h2>
+        <a href="#registration" class="btn btn-primary btn-xl rounded-pill mt-5">Register With Us</a>
+      </div>
+    </div>
+    <div class="bg-circle-1 bg-circle"></div>
+    <div class="bg-circle-2 bg-circle"></div>
+    <div class="bg-circle-3 bg-circle"></div>
+    <div class="bg-circle-4 bg-circle"></div>
+  </header>
+
+  <section>
+    <div class="container" id="About Us">
+      <div class="row align-items-center">
+          <div class="p-5">
+            <h2 class="display-4">About Us</h2>
+              <p>FOR A CAUSE provides a charity fundraising ecosystem to connect the users of Amazon voice-service enabled devices and the charities wanting to raise donations. </p>
+              <p>We allow users to discover and donate to the causes that speak to them (pun intended!) via AmazonPay, while making it easier for the charities to raise donations. </p>
+              <p>This site is designed for the charities to register with us, so their information can be used on our Alexa voice skill.</p>
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container" id="How We Help">
+      <div class="row align-items-center">
+          <div class="p-5">
+            <h2 class="display-4">How Do We Help Charities?</h2>
+            <p>Charities register with us below and their information gets stored with us. Any donations raised by our Alexa Skill app gets collected to our AmazonPay account and we distribute out the donations to the the respective charities periodically. This allows the charities to raise funding via a new venue without creating any extra work upfront.
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container" id="registration">
+      <div class="row align-items-center">
+          <div class="p-5">
+            <h2 class="display-4">Registration</h2>
+            <p>Please fill out the form below, so when a user asks for some information about your charity, we can provide it to them! :)</p>
+            <form action="{{ url_for('index') }}" method="post" novalidate>
+              <div class="form-group">
+                  {{ form.csrf_token }}
+                  {{form.charityName.label}}
+                  {{ form.charityName(size = 32, class="form-control", placeholder='Charity name goes here...')}}
+                  {% if form.charityName.errors %}
+                        <ul class="error">{% for error in form.charityName.errors %}
+                            <li> {{ error }}</li>
+                        {% endfor %}
+                        </ul>
+                  {% endif %}
+              </div>
+              <div class="form-group">
+                  {{form.charityEmail.label}}
+                  {{form.charityEmail(size = 32, class="form-control", type="email", placeholder='charity@email.com')}}
+                   {% if form.charityEmail.errors %}
+                        <ul class="error">{% for error in form.charityEmail.errors %} <li> {{ error }}</li>{% endfor %}</ul>
+                  {% endif %}
+              </div>
+              <div class="form-group">
+                  {{ form.category.label }}
+                  {{ form.category(size = 32, class="form-control", placeholder='Animal Rights...') }}
+                   {% if form.category.errors %}
+                        <ul class="error">{% for error in form.category.errors %} <li> {{ error }}</li>{% endfor %}</ul>
+                  {% endif %}
+              </div>
+              <div class="form-group">
+                  {{form.tagLine.label}}
+                  {{form.tagLine(size = 32, class="form-control", placeholder='You tag line goes here...')}}
+                   {% if form.tagLine.errors %}
+                        <ul class="error">{% for error in form.tagLine.errors %} <li> {{ error }}</li>{% endfor %}</ul>
+                  {% endif %}
+              </div>
+              <div class="form-group">
+                  {{form.mission.label}}
+                  {{form.mission(size = 32, class="form-control", placeholder="[charity's] mission is to...")}}
+                   {% if form.mission.errors %}
+                        <ul class="error">{% for error in form.mission.errors %} <li> {{ error }}</li>{% endfor %}</ul>
+                  {% endif %}
+              </div>
+              <div class="url">
+                  {{form.charityWebsite.label}}
+                  {{form.charityWebsite(size = 32, class="form-control", placeholder='www.example.com')}}
+                   {% if form.charityWebsite.errors %}
+                        <ul class="error">{% for error in form.charityWebsite.errors %} <li> {{ error }}</li>{% endfor %}</ul>
+                  {% endif %}
+              </div>
+              <div class="form-group">
+                <button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+                <button type="reset" class="btn btn-primary">Clear</button>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container" id="team">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-lg-2">
+        </div>
+          <div class="p-5">
+            <h2 class="display-4">Our Team</h2>
+            <p>The best team in the world!</p>
+            <p>We are a four-person software engineering team, specializing in back-end and front-end!</p>
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-lg-2">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="../static/img/01.jpg" alt="Krishna" href="#">
+          </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <div class="p-5">
+            <h2 class="display-4">Krishna</h2>
+            <p>Idea, Alexa Skills, and bootstrap front-end.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="../static/img/2.jpg" alt="Alex" href="#">
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="p-5">
+            <h2 class="display-4">Alex</h2>
+            <p>DynamoDB, Flask App, & AWS integration.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-lg-2">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="../static/img/03.JPG" alt="Jose" href="#">
+          </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <div class="p-5">
+            <h2 class="display-4">Jose</h2>
+            <p>AmazonPay, Integration with Alexa SDK & Alexa Skills.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="../static/img/05.jpg" alt="Anshuman" href="#">
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="p-5">
+            <h2 class="display-4">Anshuman</h2>
+            <p>Overall project support/management and quality control.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container" id="privacy policy">
+      <div class="row align-items-center">
+          <div class="p-5">
+            <h2 class="display-4">Privacy Policy For Alexa Skill</h2>
+                <p>This privacy policy describes how For-A-Cause team (“us” or “we”) protects your (“you”, “the user”) privacy and your data. Before using any of our Alexa Skills (“our skills”), please read <a href="#privacy policy">this</a> policy and our <a href="#terms of use">Terms of Use For Alexa Skill</a>, as well as the <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=201809740">Alexa Terms of Use</a> and the <a href = "https://www.amazon.com/gp/help/customer/display.html?nodeId=468496">Privacy Policies</a> by the Amazon Digital Services LLC (with its affiliates, “Amazon”).</p>
+                <p>Regarding Amazon, “Alexa” means their Alexa Voice Service which includes third party services (like our skills) and other related Software.</p>
+                <p>If you use one of our skills you fully agree to this Privacy Policy.</p>
+            <h3 class="display-6">General</h3>
+                <p>When you use our skills you have to talk to Alexa. This voice input is sent to Amazon and us where we use it to understand what our skill should do for you. This is absolutely necessary for our service to give you an appropriate answer.</p>
+            <h3 class="display-6">Data</h3>
+              <p>We never collect or share personal data with our skills.</p>
+              <p>To improve our services we analyze automatically how often utterances are spoken and other analytics. This is done automatically by Amazon in the Amazon Developer Portal.</p>
+              <p>For some of our skills it is necessary to save data for you in our databases. This data is only connected to your Alexa-UserId but never to your name or any other personal information. </p>
+            <h3 class="display-6">Changes</h3>
+              <p>Our skills or parts of it may change or be updated at any time. Further, this Privacy Policy might change. You can find a link to this policy on the description page of the skill in the Alexa App or in the Alexa Store. Your continued use of our skill after changes of the Privacy Policy or the skill itself will be seen as your acceptance of both.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container" id="terms of use">
+      <div class="row align-items-center">
+          <div class="p-5">
+            <h2 class="display-4">Terms of Use For Alexa Skill</h2>
+              <p>This Terms of Use are an agreement between you (the, "the user”) and For-A-Cause team (“us” or “we”). Before using any of our Alexa Skills (“our skills”), please read <a href="#terms of use">this</a> policy and our <a href="#privacy policy">Privacy Policy For Alexa Skill</a>, as well as the <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=201809740">Alexa Terms of Use</a> and the <a href = "https://www.amazon.com/gp/help/customer/display.html?nodeId=468496">Privacy Policies</a> by the Amazon Digital Services LLC (with its affiliates, “Amazon”).</p>
+              <p>Regarding Amazon, “Alexa” means their Alexa Voice Service which includes third party services (like our skills) and other related Software.</p>
+              <p>If you use one of our skills you fully agree to this Terms of Use.</p>
+            <h3 class="display-6">General</h3>
+                <p>When you use our skills you have to talk to Alexa. This voice input is sent to Amazon and us where we use it to understand what our skill should do for you. This is absolutely necessary for our service to give you an appropriate answer.</p>
+            <h3 class="display-6">Disclaimer</h3>
+              <p>Our skills or parts of it may discontinue at any time or might contain errors. You use our skills on your own responsibility. Any information should not be seen as an advice.</p>
+            <h3 class="display-6">Changes</h3>
+              <p>Our skills or parts of it may change or be updated at any time. Further, our Terms of Use might change. You can find a link to this agreement on the description page of the skill in the Alexa App or in the Alexa Store. Your continued use of our skill after changes of the Terms of Use or the skill itself will be seen as your acceptance of both.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    {% if submission_successful %}
+        <!-- Button trigger modal -->
+<button id="modalbutton" type="button" class="btn btn-primary" hidden data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button>
+
+        <!--Boostrap Modal (popup)-->
+        <div id="mymodal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Thank you for your submission! Your information will now be in the database </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+        <script>
+            $(function(){
+                $("#myModal").modal('toggle');
+            });
+
+        </script>
+    {% endif %}
+
+{% endblock %}
+

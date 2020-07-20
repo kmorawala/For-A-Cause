@@ -3,3 +3,13 @@ keys.py
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+!/templates
+!/templates/*
+!/static
+!/static/*
+!/static/css
+!/static/css/*
+!/static/img
+!/static/img/*
+!/static/scss
+!/static/scss/*
