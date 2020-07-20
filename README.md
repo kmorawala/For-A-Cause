@@ -19,7 +19,7 @@ Our design is broken into three tiers:
 
 * **Charity Interactions:** A front-end is dedicated for the charities to register with us and provide us with valuable information to share with users.
 * **Storage:** An AWS (DynamoDB) NoSQL database is utilized that stores the information provided by the charities and later retrieved by the Alexa skill.
-* **User Interactions via Alexa voice skill:** The user interacts with the app using an Amazon smart device via Alexa voice skill - **For A Cause**. Python is used for the back-end logic for the skill development. The back-end retrieves necessary information from the database, uses Amazon Pay for processing donation payments, and handles other requests as made by the users.
+* **User Interactions via Alexa voice skill:** The user interacts with the app using an Amazon smart device via Alexa voice skill - **For A Cause**. Python is used for the back-end logic for the skill development. The back-end retrieves necessary information from the database, uses Amazon Pay for processing donation payments, and handles other requests as made by the users. **Amazon Pay** is integrated in the Alexa Skill to enable seamless payment processing between the user and us.  
 
 The system architechure and data flow are as follows:
 <table><tr><td>
