@@ -148,5 +148,22 @@ DynamoDB doesn't need to know the other rows yet, unlike a regular RDS.
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DynamoDB/DynamoDBTableNameandID.png" />
 </td></tr></table>
 
+## How we set up the Flask App:
+
+* AWS Elastic Beanstalk
+Luckily, Elastic Beanstalk takes care of most of the heavy lifting, spinning up everything needed to deploy our Flask App.
+(AWS Management Console -> DynamoDB) and click on **Create table**
+
+<table><tr><td>
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DynamoDB/DynamoDBCreateTable.png" />
+</td></tr></table>
+
+Name the table "CharityInfo" and set the Primary Key to ID as a Number and then hit **Create**.
+DynamoDB doesn't need to know the other rows yet, unlike a regular RDS.
+
+<table><tr><td>
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DynamoDB/DynamoDBTableNameandID.png" />
+</td></tr></table>
+
 
 
