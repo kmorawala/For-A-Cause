@@ -6,9 +6,9 @@ This project is part of the AWS Hackathon submissions that enables users to disc
 * An AWS DynamoDB database that stores the information
 * An Alexa voice skill that allows the users to easily discover charities that are meaningful to them with an option to make a donations via Amazon Pay.
 
-The system architechure and data flow are as follows:
+The following describes how the entire eco-system works:
 <table><tr><td>
-    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/System%20Diagram.png" />
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/How_it_works.JPG" />
 </td></tr></table>
 
 ## Inspiration
@@ -21,23 +21,40 @@ Our design is broken into three tiers:
 * **Storage:** An AWS (DynamoDB) NoSQL database is utilized that stores the information provided by the charities and later retrieved by the Alexa skill.
 * **User Interactions via Alexa voice skill:** The user interacts with the app using an Amazon smart device via Alexa voice skill - **For A Cause**. Python is used for the back-end logic for the skill development. The back-end retrieves necessary information from the database, uses Amazon Pay for processing donation payments, and handles other requests as made by the users.
 
+The system architechure and data flow are as follows:
+<table><tr><td>
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/System%20Diagram.png" />
+</td></tr></table>
+
 We used the following technologies:
+* Alexa ASK (Alexa Skills Kit)
 * Python
-* Github
-* Alexa SDK
+* AmazonPay
 * AWS DynamoDB
-* HTML/CSS/Javascript template
+* HTML
+* CSS
+* Jquery
+* Bootstrap
+* Flask
+* Route53
+* Application Load Balancer
+* AWS Certificate Manager
+* AWS CLI
+* noSQL Workbench
+* Slack
+* Google Meet
+* Github
 
 ## How to use it:
 
-Please refer to the "How to set up" section to set up before using it.
+Please refer to the "How to test" section before testing it. Judges are given beta tester and developer level access to the Alexa skill. A user access is created for the judges for DynamoDB. The user ID and passwords are provided in the original hackathon submission.
 
-By invoking the wake word "Alexa, open for a cause", the user can simply get started. The app provides necessary help instructions as the users interact.
+For donors/users, the skill can be used by invoking the wake word "Alexa, open for a cause", the user can simply get started. The app provides necessary help instructions as the users interact. It handles various situations, such as exploring more charities, donating to a charity or providing more information about charity, processing payments using Amazon Pay, etc.
 
-Similarly, the charities can access the registration form [here](http://tinyurl.com/for-a-cause).
+The charities can access the registration form [here](https://www.for-a-cause.net/). The charity form collects various information from the charity for the Alexa skill to use and their e-mail address to arrange for the funding to be distributed periodically.
 
 ## Challenges we ran into
-All of our team members do not have extensive experience in this area, and some of us are completely new to developing a voice skill. The challenge was to familiarize ourselves quickly with new concepts, build and test an app. We found this challenge to be fun and rewarding.
+All of our team members do not have extensive experience in developing an Alexa skill and integrating it various AWS services, such as DynamoDB, AmazonPay, AWS certificate manager, etc. The challenge was to familiarize ourselves quickly with new concepts/technologies, research, build and test a fully functioning application. We found this challenge to be fun and rewarding and hoping that it would help charities to raise funding in future.
 
 ## Accomplishments that we're proud of
 We feel proud to be able to develop a multi-facet system that the charities can use to raise funding, while making it easier for the users to donate to their favorite charities!
@@ -48,18 +65,26 @@ We learned an abundance of things from where we started. A few of the highlights
 * AWS DynamoDB and its integration to Alexa skills
 * AmazonPay and its integration to Alexa skills
 * Various front-end technologies
+* Collaboration
+* Time management
+* Communication/interpersonal skills
 
 ## What's next for our project
-We would like to add features such as monthly subscription, charity of the month, ability for charities to obtain user address to send appreciation gifts, and so forth. We think this app has a huge potential to help non-profits!
-
-## References
-TBD
+We would like to add features such as monthly subscription, ability for charities to obtain user addresses to send appreciation gifts, and so forth. We think this app has a huge potential to help non-profits!
 
 ## How to test it:
-Since this app has not been published for public, the hackathon judges have been provided the access to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) and once they login, click on **Cause** as follows:
 
+* Alexa Skill
+Since this app has not been published to public, the hackathon judges have been provided the access to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) and as beta testers. Once they login to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask), click on **Cause** and quickly make their way to the "Test" tab to test the app. Best way to test the app is by speaking to it rather than typing to avoid any non-word inputs (i.e. $1 instead of one dollar).
+
+* DynamoDB
+DyanmoDB can be accessed on [AWS Management Console](https://820223306190.signin.aws.amazon.com/console) using the username and password provided in the Devpost submission.
+
+* Amazon Pay
+Amazon Pay can be accessed on [Seller Central](https://sellercentral.amazon.com/invitation/accept?merchantId=A2G5K08S7KTD5R&invitationId=6daebb51-4159-452e-8371-34e3bc08bdd3) using the username and password provided in the Devpost submission. Select sandbox view upon login.
 
 ## How we set up the Alexa Skill:
+We wanted to provide some simple set up instructions for anyone who wanted to follow along!
 
 * Alexa Skill
 Since this app has not been published into the market place, if you would like to use it on your Alexa devices, go to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) and click on **Create a Skill**
