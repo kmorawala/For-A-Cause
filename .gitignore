@@ -10,3 +10,7 @@
 !/Images/*
 !/Flask App/
 !/Flask App/*
+!/DynamoDB
+!/DynamoDB/*
+!/FlaskAPP
+!/FlaskApp/*
