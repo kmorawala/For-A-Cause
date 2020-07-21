@@ -177,18 +177,21 @@ DynamoDB doesn't need to know the other rows yet, unlike a regular RDS.
 
 * AWS Elastic Beanstalk
 Luckily, Elastic Beanstalk takes care of most of the heavy lifting, spinning up everything needed to deploy our Flask App.
-(AWS Management Console -> DynamoDB) and click on **Create table**
+You will need to make sure to install EB CLI first, which can be done with Homebrew on a Mac:
 
-<table><tr><td>
-    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DynamoDB/DynamoDBCreateTable.png" />
-</td></tr></table>
+$ brew update
+$ brew install awsebcli
 
-Name the table "CharityInfo" and set the Primary Key to ID as a Number and then hit **Create**.
-DynamoDB doesn't need to know the other rows yet, unlike a regular RDS.
+Once the EB CLI is installed, you can take the files downloaded from github, and easily deploy them to Elastic Beanstalk.
 
-<table><tr><td>
-    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DynamoDB/DynamoDBTableNameandID.png" />
-</td></tr></table>
+~/ForACauseFlaskApp$ eb init -p python-3.6 ForACauseFlaskApp --region us-east-1
+~/ForACauseFlaskApp$ eb create flask-env
 
+Then we will open the app:
+
+~/ForACauseFlaskApp$ eb open
+
+
+From here, once the form is submitted, it will append the needed columns to the existing DynamoDB table that we created earlier.
 
 
