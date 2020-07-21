@@ -6,6 +6,8 @@
 !requirements.txt
 !/Alexa Skill/
 !/Alexa Skill/*
+!/Alexa Skill/Slots_Intents/
+!/Alexa Skill/Slots_Intents/*
 !/Images/
 !/Images/*
 !/Flask App/

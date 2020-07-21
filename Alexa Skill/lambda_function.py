@@ -6,6 +6,7 @@ from ask_sdk_model.interfaces.connections import SendRequestDirective
 import random
 import logging
 import json
+import string
 
 # imports from SDK
 from ask_sdk_core.skill_builder import (SkillBuilder, CustomSkillBuilder)
@@ -22,7 +23,7 @@ from ask_sdk_model.interfaces.connections import ConnectionsRequest
 
 # imports from several utility functions
 # data, utils, config, payload_builder, and directive_builder in a seperate file
-from alexa import data, util, payload_builder, config, directive_builder
+from alexa import data, payload_builder, config, directive_builder
 
 # DB query functions
 from query_functions import *
@@ -124,6 +125,27 @@ def get_charity_info(self, handler_input, charity_id, table_name):
     return message
 
 
+def get_charity_more_info(self, handler_input, charity_id, table_name):
+    """Function used for getting a charity's information from the database, given a table name and id."""
+    # type: (HandlerInput, Integer, String) -> String
+
+    logger.info("In get_charity_info function")
+
+    global charity_name
+    logger.info("charity_id")
+    logger.info(charity_id)
+
+    # DynamoDB query
+    charity_name, charity_mission = query_next_item(charity_id, table_name)
+    charity_tagline = get_tagline(charity_id, table_name)
+    charity_website = get_website(charity_id, table_name)
+
+    message = charity_name + ", where " + charity_tagline + " " + charity_mission + \
+        " You can find more info at " + charity_website + ". " + data.USER_OPTION_TWO
+
+    return message
+
+
 class GetNextCharityIntentHandler(AbstractRequestHandler):
     """Handler for exploring the next charity."""
 
@@ -159,7 +181,7 @@ class GetCharityInfoIntentHandler(AbstractRequestHandler):
 
         table_name = "CharityInfo"
         message = "Our charity is " + \
-            get_charity_info(self, handler_input, charity_id, table_name)
+            get_charity_more_info(self, handler_input, charity_id, table_name)
 
         handler_input.response_builder.speak(message).ask(
             data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
@@ -177,7 +199,7 @@ class MakeDonationIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         logger.info("In MakeDonationIntentHandler")
-        logger.info(charity_id)
+        # logger.info(charity_id)
         logger.info(charity_name)
 
         # access the user spoken slot value for the amount of contribution
@@ -216,6 +238,7 @@ class YesIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+        logger.info("In YesIntentHandler")
 
         # error checking to ensure the amount to be donated is provided ahead of time
         try:
@@ -236,12 +259,15 @@ class YesIntentHandler(AbstractRequestHandler):
 def set_up_amazon_pay(self, handler_input, charity_name):
     """Customer has shown intent to purchase, call Setup to grab the customers shipping address detail and check amazon pay is set up"""
     # type: (HandlerInput, String) -> Response
+    logger.info("In set_up_amazon_pay")
 
     # Permission check
     if is_missing_amazon_pay_permission(self, handler_input) is False:
+        logger.info("Is FALSE")
         handler_input.response_builder.speak(data.PERMISSION_DENIED).set_card(
             AskForPermissionsConsentCard(['payments:autopay_consent'])).set_should_end_session(True)
         return handler_input.response_builder.response
+    logger.info("In set_up_amazon_pay again")
 
     foo = handler_input.request_envelope.request.locale
 
@@ -249,11 +275,8 @@ def set_up_amazon_pay(self, handler_input, charity_name):
 
     message = data.DONATION_MADE_SPEECH + charity_name + " for " + \
         str(amount_donated) + " dollars. Should I process your payment now?"
-    logger.info(message)
-
-    handler_input.response_builder.speak(message).ask(
-        data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
-
+    # logger.info(message)
+    logger.info("Before Sending Setup Directive")
     handler_input.response_builder.add_directive(
         SendRequestDirective(
             name="Setup",
@@ -283,12 +306,14 @@ def set_up_amazon_pay(self, handler_input, charity_name):
             },
             token="correlationToken")
     )
+    handler_input.response_builder.speak(message)
     return handler_input.response_builder.response
 
 
 def charge_amazon_pay(self, handler_input, charity_name, amount_donated):
     ''' Customer has requested checkout and wants to be charged'''
     # type: (HandlerInput, String, Integer) -> Response
+    logger.info("In charge_amazon_pay")
 
     # Permission check
     if is_missing_amazon_pay_permission(self, handler_input) is False:
@@ -327,7 +352,7 @@ def charge_amazon_pay(self, handler_input, charity_name, amount_donated):
                             'authorizeAttributes': {
                                 '@type': 'AuthorizeAttributes',
                                 '@version': '2',
-                                'authorizationReferenceId': 'sdfwr3423fsxfsrq45',
+                                'authorizationReferenceId': str(get_random_string(18)),
                                 'authorizationAmount': {
                                     '@type': 'Price',
                                     '@version': '2',
@@ -341,7 +366,7 @@ def charge_amazon_pay(self, handler_input, charity_name, amount_donated):
                 'sellerOrderAttributes': {
                                 '@type': 'SellerOrderAttributes',
                                 '@version': '2',
-                                'sellerOrderId': 'ABC-000-123235',
+                                'sellerOrderId': str(get_random_string(3)) + '-' + str(random.randrange(100, 999)) + '-' + str(random.randrange(100000, 999999)),
                                 'storeName': charity_name,
                                 'customInformation': '',
                                 'sellerNote': 'Thanks for donating to ' + charity_name
@@ -354,9 +379,7 @@ def charge_amazon_pay(self, handler_input, charity_name, amount_donated):
 def is_missing_amazon_pay_permission(self, handler_input):
     '''determines if the amazon pay set up permission is allowed or denied'''
     # type: (HandlerInput) -> bool
-
     logger.info("In is_missing_amazon_pay_permission")
-
     permissions = handler_input.request_envelope.context.system.user.permissions
     amazonPayPermission = permissions.scopes['payments:autopay_consent']
 
@@ -367,20 +390,32 @@ def is_missing_amazon_pay_permission(self, handler_input):
         return True
 
 
+def get_random_string(length):
+    # Random string with the combination of lower and upper case
+    result = ''
+    letters = string.ascii_letters
+    result_str = ''.join(random.choice(letters) for i in range(length))
+    result += result_str
+    return result
+
+
 class SetupConnectionsResponseHandler(AbstractRequestHandler):
     #"""This handles the Connections.Response event after a buy occurs."""
     def can_handle(self, handler_input):
+        logger.info("In Setup Directive 1")
         # type: (HandlerInput) -> bool
         return (is_request_type("Connections.Response")(handler_input) and
                 handler_input.request_envelope.request.name == "Setup")
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+        logger.info("In SetupConnectionsResponseHandler 2")
+
         connectionResponsePayload = handler_input.request_envelope.request.payload
         logger.info(str(connectionResponsePayload))
         connectionResponseStatusCode = handler_input.request_envelope.request.status.code
         logger.info(str(connectionResponseStatusCode))
-
+        logger.info("IN SetupConnectionsResponseHandler")
         # If there are integration or runtime errors, do not charge the payment method
         if str(connectionResponseStatusCode) != '200':
             return logger.info("Error inside SetupConnectionsResponseHandler Status Code != 200")
@@ -392,7 +427,7 @@ class SetupConnectionsResponseHandler(AbstractRequestHandler):
 
         # If billingAgreementStatus is valid, Charge the payment method
         if str(billingAgreementStatus) == 'OPEN':
-            logger.info("OPENN!")
+            logger.info("OPEN!")
 
             # Save billingAgreementId attributes because directives will close the session
             session_attr = handler_input.attributes_manager.session_attributes
@@ -421,6 +456,8 @@ class ChargeConnectionsResponseHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+        logger.info("In ChargeConnectionsResponseHandler")
+
         connectionResponsePayload = handler_input.request_envelope.request.payload
         connectionResponseStatusCode = handler_input.request_envelope.request.status.code
 
