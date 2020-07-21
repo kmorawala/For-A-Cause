@@ -202,4 +202,12 @@ Then we will open the app:
 
 From here, once the form is submitted, it will append the needed columns to the existing DynamoDB table that we created earlier.
 
+##IAM Permissions
+
+Lastly, we make sure each app has access to each other app. 
+
+The Alexa_Lambda and aws-elasticbeanstalk-ec2-role role will need DynamoDBFullAccess.
+
+
+
 
