@@ -144,7 +144,7 @@ Click on "Edit Dialogue" and set it up as follows:
 Upload all of the remaining files to this tab, unless any of these files already exist and look identical. All the .txt files represent various categories of coding questions, one per line of the file. Further, the categories would match up to the slot values of **Categories** under the Build tab.
 
 <table><tr><td>
-    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/Code_Files.png" />
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/Code_Files_2.png" />
 </td></tr></table>
 
 You will also need to establish a keys.py file that would include CarKeys class, under which "__role_creds" variable is set up to create an AWS IAM Policy to Grant AWS Lambda Access to an Amazon DynamoDB Table. See further details [here](https://aws.amazon.com/blogs/security/how-to-create-an-aws-iam-policy-to-grant-aws-lambda-access-to-an-amazon-dynamodb-table/)
