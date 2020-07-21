@@ -105,14 +105,14 @@ Choose **Start from scratch**.
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/Choose_Template.png" />
 </td></tr></table>
 
-##### Tabs
+### Tabs
 There are three tabs that we will work in this tutorial: Build, Code and Test. Feel free to work with more and use additional functionalities as you like. 
 
 <table><tr><td>
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/Build_Test_Code.png" />
 </td></tr></table>
 
-### Build Tab
+#### Build Tab
 Give an appropriate **invocation** word under **Skill Invocation Name** field for your app. This word will start the skill when uttered by the user.
 
 <table><tr><td>
@@ -139,7 +139,7 @@ Click on "Edit Dialogue" and set it up as follows:
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/DonationAmountSlotSetUp.png" />
 </td></tr></table>
 
-### Code Tab
+#### Code Tab
 
 Upload all of the remaining files to this tab, unless any of these files already exist and look identical. All the .txt files represent various categories of coding questions, one per line of the file. Further, the categories would match up to the slot values of **Categories** under the Build tab.
 
@@ -155,7 +155,7 @@ Click on **Save** first. Once successfully saved, click on **Deploy**. This step
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/Save_Deploy.png" />
 </td></tr></table>
 
-### Test Tab
+#### Test Tab
 This is where you can type in or speak to test your app on the left side and you will see JSON response on the right side.
 
 <table><tr><td>
