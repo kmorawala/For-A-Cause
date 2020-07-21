@@ -36,7 +36,7 @@ Our design is broken into three tiers:
 
 The system architechure and data flow are as follows:
 <table><tr><td>
-    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/System%20Diagram.png" />
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/System%20Diagram%20v2.png" />
 </td></tr></table>
 
 We used the following technologies:
