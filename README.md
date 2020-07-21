@@ -181,23 +181,23 @@ Luckily, Elastic Beanstalk takes care of most of the heavy lifting, spinning up 
 You will need to make sure to install EB CLI first, which can be done with Homebrew on a Mac:
 
 
-$ brew update
+`$ brew update`
 
-$ brew install awsebcli
+`$ brew install awsebcli`
 
 
 Once the EB CLI is installed, you can take the files downloaded from github, and easily deploy them to Elastic Beanstalk (Make sure to download only the folder labelled "Flask App", as this was run independently in it's own environment for deployment, and not tested with the bundle of "For-A-Cause").
 
 
-~/ForACauseFlaskApp$ eb init -p python-3.6 ForACauseFlaskApp --region us-east-1
+`~/ForACauseFlaskApp$ eb init -p python-3.6 ForACauseFlaskApp --region us-east-1`
 
-~/ForACauseFlaskApp$ eb create flask-env
+`~/ForACauseFlaskApp$ eb create flask-env`
 
 
 Then we will open the app:
 
 
-~/ForACauseFlaskApp$ eb open
+`~/ForACauseFlaskApp$ eb open`
 
 
 From here, once the form is submitted, it will append the needed columns to the existing DynamoDB table that we created earlier.
