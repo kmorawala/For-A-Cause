@@ -1,6 +1,17 @@
 # For-A-Cause
 
 - [About this project](#about-this-project)
+- [Inspiration](#inspiration)
+- [What it does and How we built it](#what-it-does-and-how-we-built-it)
+- [How to use it](#how-to-use-it:)
+- [Challenges we ran into](#challenges-we-ran-into)
+- [Accomplishments that we're proud of](#accomplishments-that-we're-proud-of)
+- [What we learned](#what-we-learned)
+- [What's next for our project](#what's-next-for-our-project)
+- [How to test it](#how-to-test-it:)
+- [How we set up the Alexa Skill](#how-we-set-up-the-alexa-skill:)
+- [How we set up DynamoDB](#how-we-set-up-dynamoDB:)
+- [How we set up the Flask App](#how-we-set-up-the-flask-app:)
 
 ## About this project
 This project is part of the AWS Hackathon submissions that enables users to discover and donate to charities that speaks to them (yes, literally!) via any Amazon smart device with voice enabled capabilities! We have developed a full eco-system to support charities to help raise funds:
@@ -48,7 +59,6 @@ We used the following technologies:
 * Github
 
 ## How to use it:
-
 Please refer to the "How to test" section before testing it. Judges are given beta tester and developer level access to the Alexa skill. A user access is created for the judges for DynamoDB. The user ID and passwords are provided in the original hackathon submission.
 
 For donors/users, the skill can be used by invoking the wake word "Alexa, open for a cause", the user can simply get started. The app provides necessary help instructions as the users interact. It handles various situations, such as exploring more charities, donating to a charity or providing more information about charity, processing payments using Amazon Pay, etc.
@@ -75,7 +85,6 @@ We learned an abundance of things from where we started. A few of the highlights
 We would like to add features such as monthly subscription, ability for charities to obtain user addresses to send appreciation gifts, and so forth. We think this app has a huge potential to help non-profits!
 
 ## How to test it:
-
 * Alexa Skill
 Since this app has not been published to public, the hackathon judges have been provided the access to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) and as beta testers. Once they login to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask), click on **Cause** and quickly make their way to the "Test" tab to test the app. Best way to test the app is by speaking to it rather than typing to avoid any non-word inputs (i.e. $1 instead of one dollar).
 
