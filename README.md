@@ -90,12 +90,14 @@ We would like to add features such as monthly subscription, ability for charitie
 Since this app has not been published to public, but only published to the beta testers, there are two ways to test the app (besides having to set it up using the files provided in the repo using the instructions under how we set it up): 
     * Using Console: 
         * The hackathon judges have been provided the access to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask). 
-        * Once logged into the account provided on the Hackathon page, they should be able to see a skill called **Cause** on their console. 
+        * Once logged into the account using the e-mail addresses provided on the Hackathon page, they should be able to see a skill called **Cause** on their console. 
         * There will be a live skill and one under development. Since AmazonPay has been set up under the SandBox mode, click on the one that is labelled as under development. 
         * Click on the test tab and start testing it away! The best way to test the app is by speaking to it rather than typing to avoid any non-word inputs (i.e. $1 instead of one dollar).
     * As a beta tester:
-        * Go [here](https://skills-store.amazon.com/deeplink/tvt/33be3e01488b47cd02330efe3fc172fe444959f35d3d5f9d080148375f23689b84a14ba933901d8c8b12185bcddb969c76ba95c6c9cfd571336206080b6afc9612d84e447d1b0dbdd6a8958afdf1dd5a92d6287334d63ee6ada14cd2fc1368dcdbf2d7cb27a055b20255a953e6a14836)
         * Using the e-mail addresses provided on the hackathon page, login to your accounts. 
+        * Go [here](https://skills-store.amazon.com/deeplink/tvt/33be3e01488b47cd02330efe3fc172fe444959f35d3d5f9d080148375f23689b84a14ba933901d8c8b12185bcddb969c76ba95c6c9cfd571336206080b6afc9612d84e447d1b0dbdd6a8958afdf1dd5a92d6287334d63ee6ada14cd2fc1368dcdbf2d7cb27a055b20255a953e6a14836)
+        * Enable the skill called **Cause**
+        * Be sure to enable **Amazon Pay** permission in the skill
         * Use any associated device or Alexa App on the phone to start interracting with the app and test it away!
 
 * DynamoDB
