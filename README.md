@@ -177,14 +177,17 @@ DynamoDB doesn't need to know the other rows yet, unlike a regular RDS.
 
 * AWS Elastic Beanstalk
 Luckily, Elastic Beanstalk takes care of most of the heavy lifting, spinning up everything needed to deploy our Flask App.
+
 You will need to make sure to install EB CLI first, which can be done with Homebrew on a Mac:
 
 $ brew update
+
 $ brew install awsebcli
 
 Once the EB CLI is installed, you can take the files downloaded from github, and easily deploy them to Elastic Beanstalk.
 
 ~/ForACauseFlaskApp$ eb init -p python-3.6 ForACauseFlaskApp --region us-east-1
+
 ~/ForACauseFlaskApp$ eb create flask-env
 
 Then we will open the app:
