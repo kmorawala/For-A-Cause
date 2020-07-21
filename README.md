@@ -21,7 +21,7 @@ This project is part of the AWS Hackathon submissions that enables users to disc
 
 The following describes how the entire eco-system works:
 <table><tr><td>
-    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/How_it_works.JPG" />
+    <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/How_it_works.JPG" width="40%"/>
 </td></tr></table>
 
 ## Inspiration
