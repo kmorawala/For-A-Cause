@@ -31,7 +31,7 @@ def createSetupPayload( language ):
                 '@type':                                        'SellerBillingAgreementAttributes',
                 '@version':                                     globalConfig['version'],
                 'sellerBillingAgreementId':                     '999999',
-                'storeName':                                    'No Nicks', #regionalConfig['sellerStoreName,'],
+                'storeName':                                    'For A Cause', #regionalConfig['sellerStoreName,'],
                 'customInformation':                            regionalConfig['customInformation']
             }
         }
