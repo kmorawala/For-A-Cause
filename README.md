@@ -59,7 +59,7 @@ We used the following technologies:
 * Github
 
 ## How to use it
-Please refer to the "How to test" section before testing it. Judges are given beta tester and developer level access to the Alexa skill. A user access is created for the judges for DynamoDB. The user ID and passwords are provided in the original hackathon submission.
+**Please refer to the "How to test" section before testing it. Judges are given beta tester and developer level access to the Alexa skill. A user access is created for the judges for DynamoDB and Amazon Pay. The user ID and passwords are provided in the original hackathon submission.**
 
 For donors/users, the skill can be used by invoking the wake word "Alexa, open for a cause", the user can simply get started. The app provides necessary help instructions as the users interact. It handles various situations, such as exploring more charities, donating to a charity or providing more information about charity, processing payments using Amazon Pay, etc.
 
@@ -69,7 +69,7 @@ The charities can access the registration form [here](https://www.for-a-cause.ne
 All of our team members do not have extensive experience in developing an Alexa skill and integrating it various AWS services, such as DynamoDB, AmazonPay, AWS certificate manager, etc. The challenge was to familiarize ourselves quickly with new concepts/technologies, research, build and test a fully functioning application. We found this challenge to be fun and rewarding and hoping that it would help charities to raise funding in future.
 
 ## Accomplishments that we're proud of
-We feel proud to be able to develop a multi-facet system that the charities can use to raise funding, while making it easier for the users to donate to their favorite charities!
+We feel proud to be able to develop a multi-facet system that the charities can use to raise funding, while making it easier for the users to donate to their favorite charities! We also learned a ton (as listed below)!
 
 ## What we learned
 We learned an abundance of things from where we started. A few of the highlights are as follows:
@@ -77,6 +77,7 @@ We learned an abundance of things from where we started. A few of the highlights
 * AWS DynamoDB and its integration to Alexa skills
 * AmazonPay and its integration to Alexa skills
 * Various front-end technologies
+* Research Skills
 * Collaboration
 * Time management
 * Communication/interpersonal skills
@@ -86,13 +87,34 @@ We would like to add features such as monthly subscription, ability for charitie
 
 ## How to test it
 * Alexa Skill
-Since this app has not been published to public, the hackathon judges have been provided the access to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) and as beta testers. Once they login to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask), click on **Cause** and quickly make their way to the "Test" tab to test the app. Best way to test the app is by speaking to it rather than typing to avoid any non-word inputs (i.e. $1 instead of one dollar).
+Since this app has not been published to public, but only published to the beta testers, there are two ways to test the app (besides having to set it up using the files provided in the repo using the instructions under how we set it up): 
+    * Using Console: 
+        * The hackathon judges have been provided the access to [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask). 
+        * Once logged into the account provided on the Hackathon page, they should be able to see a skill called **Cause** on their console. 
+        * There will be a live skill and one under development. Since AmazonPay has been set up under the SandBox mode, click on the one that is labelled as under development. 
+        * Click on the test tab and start testing it away! The best way to test the app is by speaking to it rather than typing to avoid any non-word inputs (i.e. $1 instead of one dollar).
+    * As a beta tester:
+        * Go [here](https://skills-store.amazon.com/deeplink/tvt/33be3e01488b47cd02330efe3fc172fe444959f35d3d5f9d080148375f23689b84a14ba933901d8c8b12185bcddb969c76ba95c6c9cfd571336206080b6afc9612d84e447d1b0dbdd6a8958afdf1dd5a92d6287334d63ee6ada14cd2fc1368dcdbf2d7cb27a055b20255a953e6a14836)
+        * Using the e-mail addresses provided on the hackathon page, login to your accounts. 
+        * Use any associated device or Alexa App on the phone to start interracting with the app and test it away!
 
 * DynamoDB
-DyanmoDB can be accessed on [AWS Management Console](https://820223306190.signin.aws.amazon.com/console) using the username and password provided in the Devpost submission.
+    * DyanmoDB can be accessed on [AWS Management Console](https://820223306190.signin.aws.amazon.com/console) using the account number, username and password provided in the Devpost submission.
+    * Under search area, search for **DyanmoDB**
+    * Click on **Tables** on the left and **CharityInfo** on the right
+    * Click on **Items** to see the database entries.
+    * Here is where you can see the charity information being stored.
 
 * Amazon Pay
-Amazon Pay can be accessed on [Seller Central](https://sellercentral.amazon.com/invitation/accept?merchantId=A2G5K08S7KTD5R&invitationId=6daebb51-4159-452e-8371-34e3bc08bdd3) using the username and password provided in the Devpost submission. Select sandbox view upon login.
+    * Amazon Pay can be accessed on [Seller Central](https://sellercentral.amazon.com/invitation/accept?merchantId=A2G5K08S7KTD5R&invitationId=6daebb51-4159-452e-8371-34e3bc08bdd3) using the username and password provided in the Devpost submission. 
+    * Select sandbox view upon login. 
+    * Click on **Orders** and **Manage Transactions** to see the transaction history.
+    * Here is where you can see the donation payments being processed under a sandbox environment.
+
+* Flask App
+    * The website is fully deployed [here](https://for-a-cause.net)
+    * All the testing can be performed on the live website.
+    * All the relevant documentation is available in our repository
 
 ## How we set up the Alexa Skill
 We wanted to provide some simple set up instructions for anyone who wanted to follow along!
