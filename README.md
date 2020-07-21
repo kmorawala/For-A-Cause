@@ -105,7 +105,7 @@ Choose **Start from scratch**.
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/Choose_Template.png" />
 </td></tr></table>
 
-### Tabs
+##### Tabs
 There are three tabs that we will work in this tutorial: Build, Code and Test. Feel free to work with more and use additional functionalities as you like. 
 
 <table><tr><td>
