@@ -1,5 +1,7 @@
 # For-A-Cause
 
+- [About this project](#about-this-project)
+
 ## About this project
 This project is part of the AWS Hackathon submissions that enables users to discover and donate to charities that speaks to them (yes, literally!) via any Amazon smart device with voice enabled capabilities! We have developed a full eco-system to support charities to help raise funds:
 * A front-end for charities to register with us and provide us with their information to share with users
