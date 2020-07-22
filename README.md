@@ -63,7 +63,7 @@ We used the following technologies:
 
 For donors/users, the skill can be used by invoking the wake word "Alexa, open for a cause", the user can simply get started. The app provides necessary help instructions as the users interact. It handles various situations, such as exploring more charities, donating to a charity or providing more information about charity, processing payments using Amazon Pay, etc.
 
-The charities can access the registration form [here](https://www.for-a-cause.net/). The charity form collects various information from the charity for the Alexa skill to use and their e-mail address to arrange for the funding to be distributed periodically.
+The charities can access the registration form [www.for-a-cause.net](https://www.for-a-cause.net/). The charity form collects various information from the charity for the Alexa skill to use and their e-mail address to arrange for the funding to be distributed periodically.
 
 ## Challenges we ran into
 All of our team members do not have extensive experience in developing an Alexa skill and integrating it various AWS services, such as DynamoDB, AmazonPay, AWS certificate manager, etc. The challenge was to familiarize ourselves quickly with new concepts/technologies, research, build and test a fully functioning application. We found this challenge to be fun and rewarding and hoping that it would help charities to raise funding in future.
