@@ -23,7 +23,7 @@ from ask_sdk_model.interfaces.connections import ConnectionsRequest
 
 # imports from several utility functions
 # data, utils, config, payload_builder, and directive_builder in a seperate file
-from alexa import data, payload_builder, config, directive_builder
+from alexa import data
 
 # DB query functions
 from query_functions import *
