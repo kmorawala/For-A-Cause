@@ -24,6 +24,9 @@ The following describes how the entire eco-system works:
     <img src="https://github.com/kmorawala/For-A-Cause/blob/master/Images/How_it_works.JPG"/>
 </td></tr></table>
 
+## Demo Video
+[Demo vidoe](https://github.com/kmorawala/For-A-Cause/blob/master/Images/How_it_works.JPG)(https://vimeo.com/440734196)
+
 ## Inspiration
 Our project’s inspiration came from when we were looking for a way to donate to a certain charity in a quick and easy manner via voice interactions. In this world of technology, we did not come across any skill that was comprehensive enough to support both users and charities while allowing donations to be made via voice commands. Once we discovered this gap, we quickly brainstormed some ideas and decided to create a blueprint for this project. We wanted to provide charities with an avenue of voice activated donations that would help charities of any size, location, technology, and type, and our eco-system does just that!
 
