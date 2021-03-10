@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Cause app."""
+'''Cause app.'''
 
 # python imports
 import random
@@ -43,7 +43,7 @@ logger.setLevel(logging.DEBUG)
 
 
 class LaunchRequestHandler(AbstractRequestHandler):
-    """Handler for skill launch or new search."""
+    '''Handler for skill launch or new search.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -62,7 +62,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 
 def get_next_charity(self, handler_input):
-    """Function used for going to the next charity ID and name in the database."""
+    '''Function used for going to the next charity ID and name in the database.'''
     # type: (HandlerInput) -> String
 
     logger.info("In get_next_charity function")
@@ -110,7 +110,7 @@ def get_next_charity(self, handler_input):
 
 
 def get_charity_info(self, handler_input, charity_id, table_name):
-    """Function used for getting a charity's information from the database, given a table name and id."""
+    '''Function used for getting a charity's information from the database, given a table name and id.'''
     # type: (HandlerInput, Integer, String) -> String
 
     logger.info("In get_charity_info function")
@@ -128,7 +128,7 @@ def get_charity_info(self, handler_input, charity_id, table_name):
 
 
 def get_charity_more_info(self, handler_input, charity_id, table_name):
-    """Function used for getting a charity's information from the database, given a table name and id."""
+    '''Function used for getting a charity's information from the database, given a table name and id.'''
     # type: (HandlerInput, Integer, String) -> String
 
     logger.info("In get_charity_info function")
@@ -149,7 +149,7 @@ def get_charity_more_info(self, handler_input, charity_id, table_name):
 
 
 class GetNextCharityIntentHandler(AbstractRequestHandler):
-    """Handler for exploring the next charity."""
+    '''Handler for exploring the next charity.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -168,7 +168,7 @@ class GetNextCharityIntentHandler(AbstractRequestHandler):
 
 
 class GetCharityInfoIntentHandler(AbstractRequestHandler):
-    """Handler for exploring information about the current charity."""
+    '''Handler for exploring information about the current charity.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -192,7 +192,7 @@ class GetCharityInfoIntentHandler(AbstractRequestHandler):
 
 
 class MakeDonationIntentHandler(AbstractRequestHandler):
-    """Handler for making a donation to the current charity."""
+    '''Handler for making a donation to the current charity.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -215,7 +215,7 @@ class MakeDonationIntentHandler(AbstractRequestHandler):
 
 
 class HelpIntentHandler(AbstractRequestHandler):
-    """Handler for Help Intent."""
+    '''Handler for Help Intent.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -232,7 +232,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
 
 class YesIntentHandler(AbstractRequestHandler):
-    """Handler for Yes Intent. Used for confirmation only, when user agrees to use AmazonPay for their donation."""
+    '''Handler for Yes Intent. Used for confirmation only, when user agrees to use AmazonPay for their donation.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -259,7 +259,7 @@ class YesIntentHandler(AbstractRequestHandler):
 
 
 class CancelOrStopIntentHandler(AbstractRequestHandler):
-    """Single handler for Cancel and Stop Intent."""
+    '''Single handler for Cancel and Stop Intent.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -277,12 +277,12 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
 
 
 class FallbackIntentHandler(AbstractRequestHandler):
-    """Handler for Fallback Intent.
+    '''Handler for Fallback Intent.
 
     AMAZON.FallbackIntent is only available in en-US locale.
     This handler will not be triggered except in that locale,
     so it is safe to deploy on any locale.
-    """
+    '''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -301,7 +301,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
 
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
-    """Handler for Session End."""
+    '''Handler for Session End.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -318,9 +318,9 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
 
 # Exception Handler
 class CatchAllExceptionHandler(AbstractExceptionHandler):
-    """Catch all exception handler, log exception and
+    '''Catch all exception handler, log exception and
     respond with custom message.
-    """
+    '''
 
     def can_handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> bool
@@ -341,7 +341,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
 # Request and Response loggers
 class RequestLogger(AbstractRequestInterceptor):
-    """Log the alexa requests."""
+    '''Log the alexa requests.'''
 
     def process(self, handler_input):
         # type: (HandlerInput) -> None
@@ -350,7 +350,7 @@ class RequestLogger(AbstractRequestInterceptor):
 
 
 class ResponseLogger(AbstractResponseInterceptor):
-    """Log the alexa responses."""
+    '''Log the alexa responses.'''
 
     def process(self, handler_input, response):
         # type: (HandlerInput, Response) -> None
@@ -360,7 +360,7 @@ class ResponseLogger(AbstractResponseInterceptor):
 
 
 def set_up_amazon_pay(self, handler_input, charity_name):
-    """Customer has shown intent to purchase, call Setup to grab the customers shipping address detail and check amazon pay is set up"""
+    '''Customer has shown intent to purchase, call Setup to grab the customers shipping address detail and check amazon pay is set up'''
     # type: (HandlerInput, String) -> Response
     logger.info("In set_up_amazon_pay")
 
@@ -503,7 +503,7 @@ def get_random_string(length):
 
 
 class SetupConnectionsResponseHandler(AbstractRequestHandler):
-    #"""This handles the Connections.Response event after a buy occurs."""
+    #'''This handles the Connections.Response event after a buy occurs.'''
     def can_handle(self, handler_input):
         logger.info("In Setup Directive 1")
         # type: (HandlerInput) -> bool
@@ -550,7 +550,7 @@ class SetupConnectionsResponseHandler(AbstractRequestHandler):
 
 
 class ChargeConnectionsResponseHandler(AbstractRequestHandler):
-    """This handles the Connections.Response event after a buy occurs."""
+    '''This handles the Connections.Response event after a buy occurs.'''
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
