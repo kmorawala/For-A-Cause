@@ -2,11 +2,12 @@
 """Cause app."""
 
 # python imports
-from ask_sdk_model.interfaces.connections import SendRequestDirective
 import random
 import logging
 import json
 import string
+import os
+
 
 # imports from SDK
 from ask_sdk_core.skill_builder import (SkillBuilder, CustomSkillBuilder)
@@ -16,19 +17,20 @@ from ask_sdk_core.dispatch_components import (
 from ask_sdk_core.utils import is_request_type, is_intent_name
 from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response
+from ask_sdk_model.interfaces.connections import SendRequestDirective
 from ask_sdk_model.ui import SimpleCard  # for devices with a screen
-from ask_sdk_model.ui import AskForPermissionsConsentCard
 # this helps return the directive results Setup and Charge Directives
+# data, utils, config, payload_builder, and directive_builder in a seperate file
 from ask_sdk_model.interfaces.connections import ConnectionsRequest
+from ask_sdk_model.ui import AskForPermissionsConsentCard
 
 # imports from several utility functions
-# data, utils, config, payload_builder, and directive_builder in a seperate file
 from alexa import data
 
 # DB query functions
 from query_functions import *
 
-import os
+# importig s3 adapters and enabling the persistence
 from ask_sdk_s3.adapter import S3Adapter
 s3_adapter = S3Adapter(bucket_name=os.environ["S3_PERSISTENCE_BUCKET"])
 
@@ -60,7 +62,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 
 def get_next_charity(self, handler_input):
-    """Function used for going to the next charity in the database."""
+    """Function used for going to the next charity ID and name in the database."""
     # type: (HandlerInput) -> String
 
     logger.info("In get_next_charity function")
@@ -254,6 +256,107 @@ class YesIntentHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
         else:
             return charge_amazon_pay(self, handler_input, charity_name,  amount_donated)
+
+
+class CancelOrStopIntentHandler(AbstractRequestHandler):
+    """Single handler for Cancel and Stop Intent."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return (is_intent_name("AMAZON.CancelIntent")(handler_input) or
+                is_intent_name("AMAZON.StopIntent")(handler_input))
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        logger.info("In CancelOrStopIntentHandler")
+
+        handler_input.response_builder.speak(data.GOODBYE_ANSWER).set_card(
+            SimpleCard(data.SKILL_NAME, data.GOODBYE_ANSWER))
+
+        return handler_input.response_builder.response
+
+
+class FallbackIntentHandler(AbstractRequestHandler):
+    """Handler for Fallback Intent.
+
+    AMAZON.FallbackIntent is only available in en-US locale.
+    This handler will not be triggered except in that locale,
+    so it is safe to deploy on any locale.
+    """
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return is_intent_name("AMAZON.FallbackIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        logger.info("In FallbackIntentHandler")
+
+        message = data.FALLBACK_MESSAGE + " " + data.HELP_MESSAGE
+
+        handler_input.response_builder.speak(message).ask(
+            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
+
+        return handler_input.response_builder.response
+
+
+class SessionEndedRequestHandler(AbstractRequestHandler):
+    """Handler for Session End."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return is_request_type("SessionEndedRequest")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        logger.info("In SessionEndedRequestHandler")
+
+        logger.info("Session ended reason: {}".format(
+            handler_input.request_envelope.request.reason))
+        return handler_input.response_builder.response
+
+
+# Exception Handler
+class CatchAllExceptionHandler(AbstractExceptionHandler):
+    """Catch all exception handler, log exception and
+    respond with custom message.
+    """
+
+    def can_handle(self, handler_input, exception):
+        # type: (HandlerInput, Exception) -> bool
+        return True
+
+    def handle(self, handler_input, exception):
+        # type: (HandlerInput, Exception) -> Response
+        logger.info("In CatchAllExceptionHandler")
+        logger.error(exception, exc_info=True)
+
+        message = data.FALLBACK_MESSAGE + " " + data.HELP_MESSAGE
+
+        handler_input.response_builder.speak(message).ask(
+            data.REPROMPT_SPEECH)
+
+        return handler_input.response_builder.response
+
+
+# Request and Response loggers
+class RequestLogger(AbstractRequestInterceptor):
+    """Log the alexa requests."""
+
+    def process(self, handler_input):
+        # type: (HandlerInput) -> None
+        logger.debug("Alexa Request: {}".format(
+            handler_input.request_envelope.request))
+
+
+class ResponseLogger(AbstractResponseInterceptor):
+    """Log the alexa responses."""
+
+    def process(self, handler_input, response):
+        # type: (HandlerInput, Response) -> None
+        logger.debug("Alexa Response: {}".format(response))
+
+################ AMAZON PAY SET UP #####################
 
 
 def set_up_amazon_pay(self, handler_input, charity_name):
@@ -466,105 +569,6 @@ class ChargeConnectionsResponseHandler(AbstractRequestHandler):
         handler_input.response_builder.speak(
             "Thank you for your donation. The order has been placed.").set_should_end_session(True)
         return handler_input.response_builder.response
-
-
-class CancelOrStopIntentHandler(AbstractRequestHandler):
-    """Single handler for Cancel and Stop Intent."""
-
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return (is_intent_name("AMAZON.CancelIntent")(handler_input) or
-                is_intent_name("AMAZON.StopIntent")(handler_input))
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        logger.info("In CancelOrStopIntentHandler")
-
-        handler_input.response_builder.speak(data.GOODBYE_ANSWER).set_card(
-            SimpleCard(data.SKILL_NAME, data.GOODBYE_ANSWER))
-
-        return handler_input.response_builder.response
-
-
-class FallbackIntentHandler(AbstractRequestHandler):
-    """Handler for Fallback Intent.
-
-    AMAZON.FallbackIntent is only available in en-US locale.
-    This handler will not be triggered except in that locale,
-    so it is safe to deploy on any locale.
-    """
-
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("AMAZON.FallbackIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        logger.info("In FallbackIntentHandler")
-
-        message = data.FALLBACK_MESSAGE + " " + data.HELP_MESSAGE
-
-        handler_input.response_builder.speak(message).ask(
-            data.REPROMPT_SPEECH).set_card(SimpleCard(data.SKILL_NAME, message))
-
-        return handler_input.response_builder.response
-
-
-class SessionEndedRequestHandler(AbstractRequestHandler):
-    """Handler for Session End."""
-
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_request_type("SessionEndedRequest")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        logger.info("In SessionEndedRequestHandler")
-
-        logger.info("Session ended reason: {}".format(
-            handler_input.request_envelope.request.reason))
-        return handler_input.response_builder.response
-
-
-# Exception Handler
-class CatchAllExceptionHandler(AbstractExceptionHandler):
-    """Catch all exception handler, log exception and
-    respond with custom message.
-    """
-
-    def can_handle(self, handler_input, exception):
-        # type: (HandlerInput, Exception) -> bool
-        return True
-
-    def handle(self, handler_input, exception):
-        # type: (HandlerInput, Exception) -> Response
-        logger.info("In CatchAllExceptionHandler")
-        logger.error(exception, exc_info=True)
-
-        message = data.FALLBACK_MESSAGE + " " + data.HELP_MESSAGE
-
-        handler_input.response_builder.speak(message).ask(
-            data.REPROMPT_SPEECH)
-
-        return handler_input.response_builder.response
-
-
-# Request and Response loggers
-class RequestLogger(AbstractRequestInterceptor):
-    """Log the alexa requests."""
-
-    def process(self, handler_input):
-        # type: (HandlerInput) -> None
-        logger.debug("Alexa Request: {}".format(
-            handler_input.request_envelope.request))
-
-
-class ResponseLogger(AbstractResponseInterceptor):
-    """Log the alexa responses."""
-
-    def process(self, handler_input, response):
-        # type: (HandlerInput, Response) -> None
-        logger.debug("Alexa Response: {}".format(response))
 
 
 # Register intent handlers
