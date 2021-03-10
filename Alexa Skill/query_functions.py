@@ -31,7 +31,15 @@ def get_item_count(tableName):
     logger.info("item_count")
     logger.info(table.item_count)
     # return table's item count
-    return table.item_count
+    try:
+        if table.item_count == None:
+            logger.info("Table item count is None in get_item_count")
+            return 0
+        else:
+            return table.item_count
+    except:
+        logger.info("Error occured in get_item_count")
+        return 0
 
 
 def query_next_item(id, tableName):
@@ -42,27 +50,53 @@ def query_next_item(id, tableName):
     queryResponse = table.query(
         KeyConditionExpression=Key('ID').eq(id)
     )
-    if len(queryResponse['Items']) <= 0:
+    try:
+        if len(queryResponse['Items']) <= 0:
+            logger.info(
+                "Invalid number of items in the DynamoDB databse per In query_next_item")
+            return 'unavailable at this moment', 'Please try again later. '
+        else:
+            return queryResponse['Items'][0]['Name'], queryResponse['Items'][0]['Mission']
+    except:
+        logger.info("Error occured in query_next_item")
         return 'unavailable at this moment', 'Please try again later. '
-    return queryResponse['Items'][0]['Name'], queryResponse['Items'][0]['Mission']
 
 
 def get_total_contribution(id, tableName):
+    logger.info("In get_total_contribution")
     table = dynamodb.Table(tableName)
 
     queryResponse = table.query(
         KeyConditionExpression=Key('ID').eq(id)
     )
-    return queryResponse['Items'][0]['TotalContribution']
+    try:
+        if queryResponse:
+            return queryResponse['Items'][0]['TotalContribution']
+        else:
+            logger.info(
+                "get_total_contribution is None in get_total_contribution")
+            return -1
+    except:
+        logger.info("Error occured in get_total_contribution")
+        return -1
 
 
 def get_website(id, tableName):
+    logger.info("In get_website")
     table = dynamodb.Table(tableName)
 
     queryResponse = table.query(
         KeyConditionExpression=Key('ID').eq(id)
     )
-    return queryResponse['Items'][0]['Website']
+    try:
+        if queryResponse:
+            return queryResponse['Items'][0]['Website']
+        else:
+            logger.info("website is None in get_website")
+            return 'Not available at the moment'
+    except:
+        logger.info("Error occured in get_total_contribution")
+        return 'Not available at the moment'
 
 
 def get_tagline(id, tableName):
@@ -71,7 +105,15 @@ def get_tagline(id, tableName):
     queryResponse = table.query(
         KeyConditionExpression=Key('ID').eq(id)
     )
-    return queryResponse['Items'][0]['Tagline']
+    try:
+        if queryResponse:
+            return queryResponse['Items'][0]['Tagline']
+        else:
+            logger.info("Tagline is None in get_tagline")
+            return 'Not available at the moment'
+    except:
+        logger.info("Error occured in get_tagline")
+        return 'Not available at the moment'
 
 
 def update_total_contribution(id, tableName, updated_contribution):
