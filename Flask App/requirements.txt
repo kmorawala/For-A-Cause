@@ -15,7 +15,7 @@ python-dateutil==2.8.1
 requests==2.24.0
 s3transfer==0.3.3
 six==1.15.0
-urllib3==1.25.9
+urllib3==1.26.5
 Werkzeug==1.0.1
 WTForms==2.3.1
 email-validator==1.1.1
